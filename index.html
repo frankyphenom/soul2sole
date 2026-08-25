@@ -24,6 +24,9 @@
     --harbor:#35586d;
     --line:rgba(28,29,31,0.12);
     --focus:#0a5cff;
+    --paid-line:#b9791a;
+    --paid-bg:#fff4de;
+    --paid-ink:#7a5310;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -402,10 +405,36 @@
   }
   .track-title-btn:hover, .track-title-btn:focus-visible{ text-decoration:underline; }
   .track-detail-sheet{ max-width:480px; }
+  /* Lower than the shared .loc-overlay z-index (600) so that the amenity-info
+     popup (#locOverlay), opened by tapping an icon in this modal's own icon
+     row, always paints and receives clicks ON TOP of this map modal instead
+     of underneath it. */
+  #trackDetailOverlay{ z-index:590; }
   .track-detail-map-wrap{
     position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--line); margin-bottom:4px; background:var(--concrete);
   }
   .track-detail-map{ display:block; width:100%; height:340px; border:0; }
+  .track-detail-sheet .loc-icon-row{ margin-top:10px; }
+
+  /* ---------- Per-amenity map (inside the loc-info popup) ---------- */
+  .loc-map-wrap{
+    position:relative; border-radius:12px; overflow:hidden; border:1px solid var(--line); margin-top:10px; background:var(--concrete);
+  }
+  .loc-map{ display:block; width:100%; height:200px; border:0; }
+  .loc-map-label{ margin:10px 0 0; font-size:12.5px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:6px; }
+  .loc-map-label + .loc-map-wrap{ margin-top:4px; }
+  /* The "nearby paid parking" map gets its own look (gold border/wash + a
+     $ badge on the label) so it reads as clearly different from the map
+     above it, instead of looking like a second copy of the same thing. */
+  .loc-map-label--paid{ color:var(--paid-ink); font-size:13px; }
+  .paid-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px; border-radius:50%; flex:none;
+    background:var(--paid-line); color:#fff; font-size:11px; font-weight:800; line-height:1;
+  }
+  .loc-map-wrap--paid{
+    border:2px solid var(--paid-line); background:var(--paid-bg);
+  }
   /* Our own pin, not Google's — always sits dead-center over the map (which is
      centered on the track's exact coordinates), so the exact spot is always
      marked clearly without depending on a clickable Google marker (that's
@@ -508,6 +537,16 @@
     </div>
     <p class="loc-track-name" id="locTrackNameEl"></p>
     <div class="loc-body" id="locBodyEl"></div>
+    <div class="loc-map-wrap" id="locMapWrap" hidden>
+      <iframe id="locMapFrame" class="loc-map" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map"></iframe>
+    </div>
+    <p class="loc-map-label loc-map-label--paid" id="locMapLabel2" hidden>
+      <span class="paid-badge" aria-hidden="true">$</span>
+      <span id="locMapLabel2Text"></span>
+    </p>
+    <div class="loc-map-wrap loc-map-wrap--paid" id="locMapWrap2" hidden>
+      <iframe id="locMapFrame2" class="loc-map" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Nearby paid parking"></iframe>
+    </div>
     <a class="loc-dir-link" id="locDirLink" href="#" target="_blank" rel="noopener" hidden></a>
   </div>
 </div>
@@ -550,6 +589,7 @@
       <iframe id="trackDetailMapFrame" class="track-detail-map" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Street map of the track location"></iframe>
       <span class="track-detail-map-pin" aria-hidden="true">📍</span>
     </div>
+    <div class="loc-icon-row" id="trackDetailIconRow"></div>
   </div>
 </div>
 
@@ -1768,7 +1808,7 @@ en: {
   directionsBtn:"Get directions →", favAria:"Toggle favorite", trackWxLoading:"fetching live conditions…", trackWxUnavailable:"conditions unavailable", trackWxLastSeen:"Last seen {t}",
   awaySuffix:"{d} away", lapSizeLabel:"Lap size", lapsPerMileLabel:"Laps ⇄ mile",
   hoursLabel:"Hours", whereLabel:"Where", parkingLabel:"Parking", adaParkingLabel:"ADA parking", fountainsLabel:"Fountains",
-  restroomsLabel:"Restrooms", fieldHouseLabel:"Field House", hospitalLabel:"Nearest hospital", policeLabel:"Nearest police",
+  restroomsLabel:"Restrooms", fieldHouseLabel:"Field House", nearbyPaidParkingLabel:"Nearest paid parking", hospitalLabel:"Nearest hospital", policeLabel:"Nearest police",
   petHoursLabel:"Leash law hours", dogParksLabel:"Nearest dog park",
   badgeTrack:"Synthetic track", badgeAsphalt:"Paved / asphalt", badgeTrail:"Dirt / natural trail", badgeBoardwalk:"Wood boardwalk", badgeGravel:"Crushed stone / gravel",
   condGood:"Good to go", condFair:"Use judgment", condCaution:"Caution",
@@ -1828,7 +1868,7 @@ es: {
   directionsBtn:"Cómo llegar →", favAria:"Marcar como favorito", trackWxLoading:"obteniendo condiciones en vivo…", trackWxUnavailable:"condiciones no disponibles", trackWxLastSeen:"Visto por última vez {t}",
   awaySuffix:"a {d}", lapSizeLabel:"Tamaño de vuelta", lapsPerMileLabel:"Vueltas ⇄ milla",
   hoursLabel:"Horario", whereLabel:"Dónde", parkingLabel:"Estacionamiento", adaParkingLabel:"Estacionamiento accesible", fountainsLabel:"Bebederos",
-  restroomsLabel:"Baños", fieldHouseLabel:"Casa de campo", hospitalLabel:"Hospital más cercano", policeLabel:"Policía más cercana", petHoursLabel:"Horario de correa obligatoria", dogParksLabel:"Parque canino más cercano", badgeTrack:"Pista sintética", badgeAsphalt:"Pavimentado / asfalto", badgeTrail:"Tierra / sendero natural", badgeBoardwalk:"Paseo de madera", badgeGravel:"Piedra triturada / grava",
+  restroomsLabel:"Baños", fieldHouseLabel:"Casa de campo", nearbyPaidParkingLabel:"Estacionamiento de pago más cercano", hospitalLabel:"Hospital más cercano", policeLabel:"Policía más cercana", petHoursLabel:"Horario de correa obligatoria", dogParksLabel:"Parque canino más cercano", badgeTrack:"Pista sintética", badgeAsphalt:"Pavimentado / asfalto", badgeTrail:"Tierra / sendero natural", badgeBoardwalk:"Paseo de madera", badgeGravel:"Piedra triturada / grava",
   condGood:"Listo para correr", condFair:"Usa criterio", condCaution:"Precaución",
   forecastToday:"Hoy", forecastHighLow:"Máx / Mín", forecastRainChance:"Prob. de lluvia", forecastCond:"Estado", forecastUvMax:"UV máx",
   footerPre:"Clima, UV y calidad del aire de Open-Meteo, actualizados al elegir distrito. Detalles de pistas y parques de NYC Parks — siempre verifica en", footerPost:"cierres del día, permisos y horarios de temporada antes de salir. El estado de la superficie es una estimación según el clima actual, no un reporte en vivo del parque. La información de estacionamiento, accesibilidad y bebederos es orientativa — los lotes se llenan y los espacios pueden cerrarse; conviene confirmar con el 311 o el parque si la accesibilidad es esencial.", footerFreshness:"Los detalles de pistas, estacionamiento y seguridad de esta página se revisaron por última vez en agosto de 2026 y se ofrecen solo con fines de planificación — confirma siempre localmente los datos de hospitales, policía y estacionamiento antes de confiar en ellos, especialmente en una emergencia.",
@@ -1881,7 +1921,7 @@ es: {
   directionsBtn:"获取路线 →", favAria:"切换收藏", trackWxLoading:"正在获取实时状况…", trackWxUnavailable:"状况不可用", trackWxLastSeen:"最后更新于 {t}",
   awaySuffix:"距离 {d}", lapSizeLabel:"单圈长度", lapsPerMileLabel:"圈数换算",
   hoursLabel:"开放时间", whereLabel:"地址", parkingLabel:"停车", adaParkingLabel:"无障碍停车位", fountainsLabel:"饮水台",
-  restroomsLabel:"洗手间", fieldHouseLabel:"活动中心", hospitalLabel:"最近的医院", policeLabel:"最近的警察局", petHoursLabel:"牵引绳规定时段", dogParksLabel:"最近的宠物公园", badgeTrack:"合成跑道", badgeAsphalt:"沥青路面", badgeTrail:"泥土/自然步道", badgeBoardwalk:"木栈道", badgeGravel:"碎石路面",
+  restroomsLabel:"洗手间", fieldHouseLabel:"活动中心", nearbyPaidParkingLabel:"最近的付费停车场", hospitalLabel:"最近的医院", policeLabel:"最近的警察局", petHoursLabel:"牵引绳规定时段", dogParksLabel:"最近的宠物公园", badgeTrack:"合成跑道", badgeAsphalt:"沥青路面", badgeTrail:"泥土/自然步道", badgeBoardwalk:"木栈道", badgeGravel:"碎石路面",
   condGood:"状况良好", condFair:"请自行判断", condCaution:"注意",
   forecastToday:"今天", forecastHighLow:"最高/最低", forecastRainChance:"降雨概率", forecastCond:"天气", forecastUvMax:"紫外线峰值",
   footerPre:"天气、紫外线与空气质量数据来自 Open-Meteo，随选择的行政区更新。跑道与公园信息来自纽约市公园局 — 出发前请务必查看", footerPost:"以获取当日闭园、许可及季节性开放时间信息。路面状况判断基于当前天气估算，并非公园实时报告。停车、无障碍停车及饮水台信息为一般性参考——车位可能停满、设施可能临时关闭，如无障碍设施对您很关键，建议致电311或公园确认。", footerFreshness:"本页面的跑道、停车及安全信息最后审核于2026年8月，仅供规划参考——在依赖医院、警局及停车具体信息前，请务必在当地核实，紧急情况下尤其如此。",
@@ -1934,7 +1974,7 @@ es: {
   directionsBtn:"取得路線 →", favAria:"切換收藏", trackWxLoading:"正在取得即時狀況…", trackWxUnavailable:"狀況無法取得", trackWxLastSeen:"最後更新於 {t}",
   awaySuffix:"距離 {d}", lapSizeLabel:"單圈長度", lapsPerMileLabel:"圈數換算",
   hoursLabel:"開放時間", whereLabel:"地址", parkingLabel:"停車", adaParkingLabel:"無障礙停車位", fountainsLabel:"飲水台",
-  restroomsLabel:"洗手間", fieldHouseLabel:"活動中心", hospitalLabel:"最近的醫院", policeLabel:"最近的警察局", petHoursLabel:"牽引繩規定時段", dogParksLabel:"最近的寵物公園", badgeTrack:"合成跑道", badgeAsphalt:"柏油路面", badgeTrail:"泥土/自然步道", badgeBoardwalk:"木棧道", badgeGravel:"碎石路面",
+  restroomsLabel:"洗手間", fieldHouseLabel:"活動中心", nearbyPaidParkingLabel:"最近的付費停車場", hospitalLabel:"最近的醫院", policeLabel:"最近的警察局", petHoursLabel:"牽引繩規定時段", dogParksLabel:"最近的寵物公園", badgeTrack:"合成跑道", badgeAsphalt:"柏油路面", badgeTrail:"泥土/自然步道", badgeBoardwalk:"木棧道", badgeGravel:"碎石路面",
   condGood:"狀況良好", condFair:"請自行判斷", condCaution:"注意",
   forecastToday:"今天", forecastHighLow:"最高/最低", forecastRainChance:"降雨機率", forecastCond:"天氣", forecastUvMax:"紫外線高峰",
   footerPre:"天氣、紫外線與空氣品質資料來自 Open-Meteo，隨所選行政區更新。跑道與公園資訊來自紐約市公園局 — 出發前請務必查看", footerPost:"以取得當日休園、許可及季節性開放時間資訊。路面狀況判斷基於目前天氣估算，並非公園即時回報。停車、無障礙停車及飲水台資訊僅供參考——車位可能停滿、設施可能暫時關閉，若無障礙設施對您至關重要，建議致電311或公園確認。", footerFreshness:"本頁面的跑道、停車及安全資訊最後審核於2026年8月，僅供規劃參考——在依賴醫院、警局及停車具體資訊前，請務必在當地核實，緊急情況下尤其如此。",
@@ -1987,7 +2027,7 @@ ru: {
   directionsBtn:"Проложить маршрут →", favAria:"В избранное", trackWxLoading:"получение данных о погоде…", trackWxUnavailable:"данные недоступны", trackWxLastSeen:"Последнее обновление {t}",
   awaySuffix:"{d}", lapSizeLabel:"Длина круга", lapsPerMileLabel:"Круги ⇄ миля",
   hoursLabel:"Часы работы", whereLabel:"Адрес", parkingLabel:"Парковка", adaParkingLabel:"Парковка для инвалидов", fountainsLabel:"Питьевые фонтанчики",
-  restroomsLabel:"Туалеты", fieldHouseLabel:"Спортивный павильон", hospitalLabel:"Ближайшая больница", policeLabel:"Ближайшее отделение полиции", petHoursLabel:"Часы действия закона о поводке", dogParksLabel:"Ближайшая площадка для собак", badgeTrack:"Синтетическое покрытие", badgeAsphalt:"Асфальт", badgeTrail:"Грунт / природная тропа", badgeBoardwalk:"Деревянный настил", badgeGravel:"Гравий / щебень",
+  restroomsLabel:"Туалеты", fieldHouseLabel:"Спортивный павильон", nearbyPaidParkingLabel:"Ближайшая платная парковка", hospitalLabel:"Ближайшая больница", policeLabel:"Ближайшее отделение полиции", petHoursLabel:"Часы действия закона о поводке", dogParksLabel:"Ближайшая площадка для собак", badgeTrack:"Синтетическое покрытие", badgeAsphalt:"Асфальт", badgeTrail:"Грунт / природная тропа", badgeBoardwalk:"Деревянный настил", badgeGravel:"Гравий / щебень",
   condGood:"Можно бежать", condFair:"Оцените сами", condCaution:"Осторожно",
   forecastToday:"Сегодня", forecastHighLow:"Макс / Мин", forecastRainChance:"Вероятность дождя", forecastCond:"Погода", forecastUvMax:"Макс. УФ",
   footerPre:"Погода, УФ-индекс и качество воздуха от Open-Meteo, обновляются при выборе района. Данные о дорожках и парках предоставлены NYC Parks — всегда проверяйте", footerPost:"на предмет закрытий, разрешений и сезонных часов работы перед выходом. Оценка состояния покрытия основана на текущей погоде, а не на данных парка в реальном времени. Информация о парковке, доступности и фонтанчиках носит общий характер — стоянки заполняются, места могут быть временно закрыты; если доступность важна, уточните в 311 или напрямую в парке.", footerFreshness:"Информация о дорожках, парковках и безопасности на этой странице была последний раз проверена в августе 2026 года и предоставлена только для планирования — всегда уточняйте данные о больницах, полиции и парковках на месте, особенно в экстренной ситуации.",
@@ -2040,7 +2080,7 @@ ko: {
   directionsBtn:"길찾기 →", favAria:"즐겨찾기 전환", trackWxLoading:"실시간 상황 확인 중…", trackWxUnavailable:"상황 정보 없음", trackWxLastSeen:"마지막 업데이트 {t}",
   awaySuffix:"{d} 거리", lapSizeLabel:"랩 길이", lapsPerMileLabel:"랩 ⇄ 마일",
   hoursLabel:"운영 시간", whereLabel:"위치", parkingLabel:"주차", adaParkingLabel:"장애인 주차", fountainsLabel:"음수대",
-  restroomsLabel:"화장실", fieldHouseLabel:"필드하우스", hospitalLabel:"가까운 병원", policeLabel:"가까운 경찰서", petHoursLabel:"목줄 착용 시간", dogParksLabel:"가까운 반려견 놀이터", badgeTrack:"합성 트랙", badgeAsphalt:"포장 / 아스팔트", badgeTrail:"흙 / 자연 트레일", badgeBoardwalk:"목재 보드워크", badgeGravel:"쇄석 / 자갈",
+  restroomsLabel:"화장실", fieldHouseLabel:"필드하우스", nearbyPaidParkingLabel:"가장 가까운 유료 주차장", hospitalLabel:"가까운 병원", policeLabel:"가까운 경찰서", petHoursLabel:"목줄 착용 시간", dogParksLabel:"가까운 반려견 놀이터", badgeTrack:"합성 트랙", badgeAsphalt:"포장 / 아스팔트", badgeTrail:"흙 / 자연 트레일", badgeBoardwalk:"목재 보드워크", badgeGravel:"쇄석 / 자갈",
   condGood:"양호", condFair:"판단 필요", condCaution:"주의",
   forecastToday:"오늘", forecastHighLow:"최고/최저", forecastRainChance:"강수 확률", forecastCond:"날씨", forecastUvMax:"자외선 최고치",
   footerPre:"날씨, 자외선, 대기질 정보는 Open-Meteo 제공이며 자치구 선택 시 갱신됩니다. 트랙 및 공원 정보는 NYC Parks 자료를 기반으로 하며, 출발 전 항상", footerPost:"에서 당일 폐쇄, 허가 및 계절별 운영 시간을 확인하세요. 노면 상태 표시는 현재 날씨를 기반으로 한 추정치이며 공원의 실시간 보고가 아닙니다. 주차, 장애인 주차, 음수대 정보는 일반적인 안내이며 — 주차장이 만차이거나 시설이 일시적으로 폐쇄될 수 있으니, 접근성이 중요하다면 311이나 공원에 직접 확인하세요.", footerFreshness:"이 페이지의 트랙, 주차 및 안전 정보는 2026년 8월에 마지막으로 검토되었으며 계획 참고용으로만 제공됩니다 — 특히 응급 상황에서는 항상 병원, 경찰, 주차 관련 세부 정보를 현지에서 확인하세요.",
@@ -2093,7 +2133,7 @@ fr: {
   directionsBtn:"Itinéraire →", favAria:"Ajouter aux favoris", trackWxLoading:"récupération des conditions en direct…", trackWxUnavailable:"conditions indisponibles", trackWxLastSeen:"Vu pour la dernière fois {t}",
   awaySuffix:"à {d}", lapSizeLabel:"Longueur du tour", lapsPerMileLabel:"Tours ⇄ mile",
   hoursLabel:"Horaires", whereLabel:"Adresse", parkingLabel:"Stationnement", adaParkingLabel:"Stationnement accessible", fountainsLabel:"Fontaines à eau",
-  restroomsLabel:"Toilettes", fieldHouseLabel:"Pavillon du parc", hospitalLabel:"Hôpital le plus proche", policeLabel:"Commissariat le plus proche", petHoursLabel:"Heures de laisse obligatoire", dogParksLabel:"Parc à chiens le plus proche", badgeTrack:"Piste synthétique", badgeAsphalt:"Pavé / asphalte", badgeTrail:"Terre / sentier naturel", badgeBoardwalk:"Promenade en bois", badgeGravel:"Pierre concassée / gravier",
+  restroomsLabel:"Toilettes", fieldHouseLabel:"Pavillon du parc", nearbyPaidParkingLabel:"Parking payant le plus proche", hospitalLabel:"Hôpital le plus proche", policeLabel:"Commissariat le plus proche", petHoursLabel:"Heures de laisse obligatoire", dogParksLabel:"Parc à chiens le plus proche", badgeTrack:"Piste synthétique", badgeAsphalt:"Pavé / asphalte", badgeTrail:"Terre / sentier naturel", badgeBoardwalk:"Promenade en bois", badgeGravel:"Pierre concassée / gravier",
   condGood:"Prêt à courir", condFair:"À évaluer soi-même", condCaution:"Prudence",
   forecastToday:"Aujourd'hui", forecastHighLow:"Max / Min", forecastRainChance:"Prob. de pluie", forecastCond:"État", forecastUvMax:"UV max",
   footerPre:"Météo, UV et qualité de l'air fournis par Open-Meteo, mis à jour selon l'arrondissement choisi. Détails des pistes et parcs issus de NYC Parks — vérifiez toujours sur", footerPost:"les fermetures du jour, permis et horaires saisonniers avant de partir. Les évaluations d'état du sol sont des estimations basées sur la météo actuelle, pas des rapports en direct du parc. Les infos de stationnement, d'accessibilité et de fontaines sont indicatives — les places peuvent être complètes ou temporairement fermées ; si l'accessibilité est essentielle, mieux vaut confirmer au 311 ou auprès du parc.", footerFreshness:"Les informations sur les pistes, le stationnement et la sécurité de cette page ont été mises à jour pour la dernière fois en août 2026 et sont fournies à titre indicatif uniquement — vérifiez toujours localement les détails concernant les hôpitaux, la police et le stationnement, surtout en cas d'urgence.",
@@ -2146,7 +2186,7 @@ it: {
   directionsBtn:"Indicazioni →", favAria:"Aggiungi ai preferiti", trackWxLoading:"recupero condizioni in tempo reale…", trackWxUnavailable:"condizioni non disponibili", trackWxLastSeen:"Ultimo aggiornamento {t}",
   awaySuffix:"a {d}", lapSizeLabel:"Lunghezza giro", lapsPerMileLabel:"Giri ⇄ miglio",
   hoursLabel:"Orari", whereLabel:"Indirizzo", parkingLabel:"Parcheggio", adaParkingLabel:"Parcheggio disabili", fountainsLabel:"Fontanelle",
-  restroomsLabel:"Bagni", fieldHouseLabel:"Casa del parco", hospitalLabel:"Ospedale più vicino", policeLabel:"Polizia più vicina", petHoursLabel:"Orari obbligo guinzaglio", dogParksLabel:"Area cani più vicina", badgeTrack:"Pista sintetica", badgeAsphalt:"Pavimentato / asfalto", badgeTrail:"Terra / sentiero naturale", badgeBoardwalk:"Passerella in legno", badgeGravel:"Pietrisco / ghiaia",
+  restroomsLabel:"Bagni", fieldHouseLabel:"Casa del parco", nearbyPaidParkingLabel:"Parcheggio a pagamento più vicino", hospitalLabel:"Ospedale più vicino", policeLabel:"Polizia più vicina", petHoursLabel:"Orari obbligo guinzaglio", dogParksLabel:"Area cani più vicina", badgeTrack:"Pista sintetica", badgeAsphalt:"Pavimentato / asfalto", badgeTrail:"Terra / sentiero naturale", badgeBoardwalk:"Passerella in legno", badgeGravel:"Pietrisco / ghiaia",
   condGood:"Via libera", condFair:"Valuta tu stesso", condCaution:"Attenzione",
   forecastToday:"Oggi", forecastHighLow:"Max / Min", forecastRainChance:"Prob. pioggia", forecastCond:"Stato", forecastUvMax:"UV max",
   footerPre:"Meteo, UV e qualità dell'aria da Open-Meteo, aggiornati in base al distretto selezionato. Dettagli su piste e parchi da NYC Parks — controlla sempre su", footerPost:"per chiusure giornaliere, permessi e orari stagionali prima di uscire. Le valutazioni sullo stato del fondo sono stime basate sul meteo attuale, non report in tempo reale del parco. Le info su parcheggio, accessibilità e fontanelle sono indicative — i posti possono esaurirsi o essere temporaneamente chiusi; se l'accessibilità è essenziale, conviene verificare con il 311 o direttamente col parco.", footerFreshness:"Le informazioni su piste, parcheggi e sicurezza in questa pagina sono state aggiornate l'ultima volta ad agosto 2026 e sono fornite solo a scopo di pianificazione — verifica sempre localmente i dettagli su ospedali, polizia e parcheggi, specialmente in caso di emergenza.",
@@ -2199,7 +2239,7 @@ ar: {
   directionsBtn:"← احصل على الاتجاهات", favAria:"تبديل المفضلة", trackWxLoading:"جارٍ جلب الأحوال المباشرة…", trackWxUnavailable:"الأحوال غير متاحة", trackWxLastSeen:"آخر تحديث {t}",
   awaySuffix:"يبعد {d}", lapSizeLabel:"طول اللفة", lapsPerMileLabel:"اللفات ⇄ الميل",
   hoursLabel:"ساعات العمل", whereLabel:"الموقع", parkingLabel:"موقف السيارات", adaParkingLabel:"موقف لذوي الإعاقة", fountainsLabel:"نافورات الشرب",
-  restroomsLabel:"دورات المياه", fieldHouseLabel:"مبنى الحديقة", hospitalLabel:"أقرب مستشفى", policeLabel:"أقرب مركز شرطة", petHoursLabel:"ساعات إلزام المقود", dogParksLabel:"أقرب حديقة كلاب", badgeTrack:"مضمار اصطناعي", badgeAsphalt:"مرصوف / إسفلت", badgeTrail:"تراب / ممر طبيعي", badgeBoardwalk:"ممشى خشبي", badgeGravel:"حصى مجروش",
+  restroomsLabel:"دورات المياه", fieldHouseLabel:"مبنى الحديقة", nearbyPaidParkingLabel:"أقرب موقف سيارات مدفوع", hospitalLabel:"أقرب مستشفى", policeLabel:"أقرب مركز شرطة", petHoursLabel:"ساعات إلزام المقود", dogParksLabel:"أقرب حديقة كلاب", badgeTrack:"مضمار اصطناعي", badgeAsphalt:"مرصوف / إسفلت", badgeTrail:"تراب / ممر طبيعي", badgeBoardwalk:"ممشى خشبي", badgeGravel:"حصى مجروش",
   condGood:"جاهز للجري", condFair:"قدّر بنفسك", condCaution:"احذر",
   forecastToday:"اليوم", forecastHighLow:"الأعلى / الأدنى", forecastRainChance:"احتمال المطر", forecastCond:"الحالة", forecastUvMax:"أعلى مؤشر أشعة",
   footerPre:"بيانات الطقس والأشعة فوق البنفسجية وجودة الهواء من Open-Meteo، وتُحدَّث عند اختيار المقاطعة. تفاصيل المضامير والحدائق من NYC Parks — تحقق دائمًا من", footerPost:"لمعرفة الإغلاقات اليومية والتصاريح وساعات العمل الموسمية قبل الخروج. تقييمات حالة السطح تقديرية بناءً على الطقس الحالي، وليست تقارير مباشرة من الحديقة. معلومات مواقف السيارات وإمكانية الوصول ونوافير الشرب إرشادية عامة — قد تمتلئ المواقف أو تُغلق مؤقتًا، ويُستحسن التأكد عبر 311 أو من الحديقة مباشرة إذا كانت إمكانية الوصول أساسية لرحلتك.", footerFreshness:"تمت آخر مراجعة لمعلومات المضامير ومواقف السيارات والسلامة في هذه الصفحة في أغسطس 2026، وهي مقدَّمة لأغراض التخطيط فقط — تحقق دائمًا محليًا من تفاصيل المستشفيات والشرطة ومواقف السيارات، خاصة في حالات الطوارئ.",
@@ -2252,7 +2292,7 @@ pt: {
   directionsBtn:"Obter direções →", favAria:"Alternar favorito", trackWxLoading:"a obter condições em tempo real…", trackWxUnavailable:"condições indisponíveis", trackWxLastSeen:"Última atualização {t}",
   awaySuffix:"a {d}", lapSizeLabel:"Comprimento da volta", lapsPerMileLabel:"Voltas ⇄ milha",
   hoursLabel:"Horário", whereLabel:"Localização", parkingLabel:"Estacionamento", adaParkingLabel:"Estacionamento acessível", fountainsLabel:"Bebedouros",
-  restroomsLabel:"Casas de banho", fieldHouseLabel:"Pavilhão do parque", hospitalLabel:"Hospital mais próximo", policeLabel:"Esquadra mais próxima", petHoursLabel:"Horário de trela obrigatória", dogParksLabel:"Parque canino mais próximo", badgeTrack:"Pista sintética", badgeAsphalt:"Pavimentado / asfalto", badgeTrail:"Terra / trilho natural", badgeBoardwalk:"Passadiço de madeira", badgeGravel:"Pedra britada / gravilha",
+  restroomsLabel:"Casas de banho", fieldHouseLabel:"Pavilhão do parque", nearbyPaidParkingLabel:"Estacionamento pago mais próximo", hospitalLabel:"Hospital mais próximo", policeLabel:"Esquadra mais próxima", petHoursLabel:"Horário de trela obrigatória", dogParksLabel:"Parque canino mais próximo", badgeTrack:"Pista sintética", badgeAsphalt:"Pavimentado / asfalto", badgeTrail:"Terra / trilho natural", badgeBoardwalk:"Passadiço de madeira", badgeGravel:"Pedra britada / gravilha",
   condGood:"Pronto a correr", condFair:"Avalia por ti", condCaution:"Cuidado",
   forecastToday:"Hoje", forecastHighLow:"Máx / Mín", forecastRainChance:"Prob. de chuva", forecastCond:"Estado", forecastUvMax:"UV máx",
   footerPre:"Clima, UV e qualidade do ar fornecidos pela Open-Meteo, atualizados ao selecionar o distrito. Detalhes de pistas e parques da NYC Parks — verifica sempre em", footerPost:"para encerramentos do dia, licenças e horários sazonais antes de saíres. As avaliações do estado do piso são estimativas com base no clima atual, não relatórios em tempo real do parque. As informações sobre estacionamento, acessibilidade e bebedouros são orientativas — os lugares podem esgotar-se ou fechar temporariamente; se a acessibilidade for essencial, confirma junto do 311 ou diretamente no parque.", footerFreshness:"As informações sobre pistas, estacionamento e segurança nesta página foram revistas pela última vez em agosto de 2026 e são fornecidas apenas para planeamento — confirma sempre localmente os detalhes de hospitais, polícia e estacionamento, especialmente numa emergência.",
@@ -2665,6 +2705,12 @@ const locTitleText = document.getElementById('locTitleText');
 const locTrackNameEl = document.getElementById('locTrackNameEl');
 const locBodyEl = document.getElementById('locBodyEl');
 const locDirLink = document.getElementById('locDirLink');
+const locMapWrap = document.getElementById('locMapWrap');
+const locMapFrame = document.getElementById('locMapFrame');
+const locMapLabel2 = document.getElementById('locMapLabel2');
+const locMapLabel2Text = document.getElementById('locMapLabel2Text');
+const locMapWrap2 = document.getElementById('locMapWrap2');
+const locMapFrame2 = document.getElementById('locMapFrame2');
 
 /* ================= TOAST ================= */
 const toastEl = document.getElementById('toastEl');
@@ -2682,12 +2728,70 @@ function placeMapsUrl(text){
   return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query + ', New York, NY');
 }
 
+/* A handful of amenity entries plainly say we couldn't confirm one (e.g.
+   "Not confirmed at trackside.", or the field-house fallback sentence).
+   Searching that literal phrase could return an unrelated, confidently-
+   pinned wrong result — worse than no map at all — so these skip the map
+   entirely and stay text-only, same as the field-house "unconfirmed" case. */
+function isUnconfirmedAmenityText(text){
+  if(!text) return true;
+  return /^Not confirmed\b/i.test(text.trim()) || text.startsWith(FIELD_HOUSE_UNCONFIRMED);
+}
+
+/* Does this parking description mention an actual free option? Checked
+   against the em-dash-free lookbehind/lookahead so "car-free-drive" (a
+   description of the roadway, not a price) doesn't false-positive — only a
+   standalone "free" (as in "free lot", "free off-season", etc.) counts.
+   Always run against the canonical English text (see locEmbedMapUrl above)
+   since the word itself won't appear in translated text. */
+function hasFreeParkingText(text){
+  return !!text && /(?<!-)free(?!-)/i.test(text);
+}
+
+/* Builds a free (no API key) Google Maps embed that live-searches for an
+   amenity near a track. We don't have a verified exact address for most
+   amenities (parking/restrooms/fountains are descriptive text, not a single
+   confirmed street address), so rather than guess at coordinates, this hands
+   the descriptive text itself to Google's own live search — real, current
+   results, grounded to the right neighborhood by appending the track name.
+   focused=true trims to the part before an em dash — for fields that always
+   follow a "Name — trailing note" pattern (hospital, police, confirmed field
+   houses) this keeps the query on the actual name instead of a trailing
+   distance/caveat note. Other fields (parking, restrooms, fountains,
+   transit) don't follow that pattern consistently, so they keep the full
+   text — trailing detail there is usually a real street/landmark, not noise. */
+function locEmbedMapUrl(rawText, trk, focused){
+  if(isUnconfirmedAmenityText(rawText)) return null;
+  const text = focused ? rawText.split('—')[0].trim() : rawText;
+  const query = `${text} near ${trk.name}, New York, NY`;
+  return 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
+}
+
 let locLastFocused = null;
-function openLocInfo({emoji, title, trackName, rows, directionsUrl, directionsLabel}){
+function openLocInfo({emoji, title, trackName, rows, directionsUrl, directionsLabel, mapEmbedUrl, extraMapEmbedUrl, extraMapLabel}){
   locLastFocused = document.activeElement;
   locIconEl.textContent = emoji;
   locTitleText.textContent = title;
   locTrackNameEl.textContent = trackName || '';
+  if(mapEmbedUrl){
+    locMapFrame.src = mapEmbedUrl;
+    locMapFrame.title = `${title} near ${trackName || ''}`.trim();
+    locMapWrap.hidden = false;
+  } else {
+    locMapFrame.src = '';
+    locMapWrap.hidden = true;
+  }
+  if(extraMapEmbedUrl){
+    locMapFrame2.src = extraMapEmbedUrl;
+    locMapFrame2.title = `${extraMapLabel || ''} near ${trackName || ''}`.trim();
+    locMapLabel2Text.textContent = extraMapLabel || '';
+    locMapLabel2.hidden = false;
+    locMapWrap2.hidden = false;
+  } else {
+    locMapFrame2.src = '';
+    locMapLabel2.hidden = true;
+    locMapWrap2.hidden = true;
+  }
   locBodyEl.innerHTML = rows
     .filter(r => r.value)
     .map(r => `<div class="loc-row"><span class="k">${r.label}</span><span class="v">${r.value}</span></div>`)
@@ -2704,13 +2808,21 @@ function openLocInfo({emoji, title, trackName, rows, directionsUrl, directionsLa
 }
 function closeLocInfo(){
   locOverlay.hidden = true;
+  locMapFrame.src = '';
+  locMapFrame2.src = '';
   if(locLastFocused && typeof locLastFocused.focus === 'function') locLastFocused.focus();
 }
 locCloseBtn.addEventListener('click', closeLocInfo);
 locOverlay.addEventListener('click', (e)=>{ if(e.target === locOverlay) closeLocInfo(); });
 document.addEventListener('keydown', (e)=>{
   if(locOverlay.hidden) return;
-  if(e.key === 'Escape'){ closeLocInfo(); return; }
+  // This popup can be nested on top of another modal (e.g. opened from the
+  // track detail map's own icon row). stopImmediatePropagation() keeps a
+  // single Escape press from also closing whatever it's nested inside —
+  // without it, closeLocInfo() below flips locOverlay.hidden to true before
+  // the outer modal's own Escape handler runs, so that handler's "is the loc
+  // popup still open" check would already read false and it would close too.
+  if(e.key === 'Escape'){ closeLocInfo(); e.stopImmediatePropagation(); return; }
   if(e.key === 'Tab'){
     // Simple focus trap: keep Tab/Shift+Tab cycling within the open modal.
     const focusable = [...locOverlay.querySelectorAll('button, a[href]')].filter(el => !el.hidden && el.offsetParent !== null);
@@ -2736,51 +2848,70 @@ function locIconRowHtml(){
     <button type="button" class="loc-btn" data-loc="transit" aria-label="${t('transitLabel')}"><span class="loc-emoji" aria-hidden="true">🚇</span><span>${t('transitLabel')}</span></button>
   `;
 }
+const FIELD_HOUSE_UNCONFIRMED = 'No dedicated field house confirmed for this park';
 function openLocForKind(kind, trk, mapsUrl){
   if(kind === 'parking'){
+    // When the description doesn't mention an actual free option, also
+    // surface a live search for nearby paid parking facilities (garages,
+    // metered lots) — Google's own category search typically returns
+    // several nearby results as pins, not just one.
+    const noFreeParking = !hasFreeParkingText(trk.parking) && !isUnconfirmedAmenityText(trk.parking);
     openLocInfo({
       emoji:'🅿️', title:t('parkingLabel'), trackName: trk.name,
       rows:[
         {label:t('parkingLabel'), value: trField(trk,'parking')},
         {label:t('adaParkingLabel'), value: trField(trk,'accessibleParking')}
       ],
-      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn'),
+      mapEmbedUrl: locEmbedMapUrl(trk.parking, trk),
+      extraMapEmbedUrl: noFreeParking
+        ? 'https://www.google.com/maps?q=' + encodeURIComponent(`paid parking garage near ${trk.name}, New York, NY`) + '&output=embed'
+        : null,
+      extraMapLabel: t('nearbyPaidParkingLabel')
     });
   } else if(kind === 'restrooms'){
     openLocInfo({
       emoji:'🚻', title:t('restroomsLabel'), trackName: trk.name,
       rows:[{label:t('restroomsLabel'), value: trField(trk,'restrooms')}],
-      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn'),
+      mapEmbedUrl: locEmbedMapUrl(trk.restrooms, trk)
     });
   } else if(kind === 'fieldHouse'){
     openLocInfo({
       emoji:'🏠', title:t('fieldHouseLabel'), trackName: trk.name,
       rows:[{label:t('fieldHouseLabel'), value: trField(trk,'fieldHouse')}],
-      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn'),
+      // locEmbedMapUrl() itself skips the map when trk.fieldHouse is the
+      // "not confirmed" placeholder (see isUnconfirmedAmenityText above).
+      mapEmbedUrl: locEmbedMapUrl(trk.fieldHouse, trk, true)
     });
   } else if(kind === 'fountains'){
     openLocInfo({
       emoji:'🚰', title:t('fountainsLabel'), trackName: trk.name,
       rows:[{label:t('fountainsLabel'), value: trField(trk,'fountains')}],
-      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn'),
+      mapEmbedUrl: locEmbedMapUrl(trk.fountains, trk)
     });
   } else if(kind === 'hospital'){
     openLocInfo({
       emoji:'🏥', title:t('hospitalLabel'), trackName: trk.name,
       rows:[{label:t('hospitalLabel'), value: trk.hospital}],
-      directionsUrl: placeMapsUrl(trk.hospital), directionsLabel: t('directionsBtn')
+      directionsUrl: placeMapsUrl(trk.hospital), directionsLabel: t('directionsBtn'),
+      mapEmbedUrl: locEmbedMapUrl(trk.hospital, trk, true)
     });
   } else if(kind === 'police'){
     openLocInfo({
       emoji:'🚓', title:t('policeLabel'), trackName: trk.name,
       rows:[{label:t('policeLabel'), value: trk.police}],
-      directionsUrl: placeMapsUrl(trk.police), directionsLabel: t('directionsBtn')
+      directionsUrl: placeMapsUrl(trk.police), directionsLabel: t('directionsBtn'),
+      mapEmbedUrl: locEmbedMapUrl(trk.police, trk, true)
     });
   } else if(kind === 'transit'){
     openLocInfo({
       emoji:'🚇', title:t('transitLabel'), trackName: trk.name,
       rows:[{label:t('transitLabel'), value: trk.transit}],
-      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn'),
+      mapEmbedUrl: locEmbedMapUrl(trk.transit, trk)
     });
   }
 }
@@ -2795,6 +2926,7 @@ const trackDetailOverlay = document.getElementById('trackDetailOverlay');
 const trackDetailCloseBtn = document.getElementById('trackDetailCloseBtn');
 const trackDetailTitleText = document.getElementById('trackDetailTitleText');
 const trackDetailMapFrame = document.getElementById('trackDetailMapFrame');
+const trackDetailIconRow = document.getElementById('trackDetailIconRow');
 
 function mapZoomFor(trk){
   if(trk.lapMiles == null) return 14;
@@ -2816,6 +2948,9 @@ function openTrackDetail(trk){
   trackDetailMapFrame.src = trk.lat != null && trk.lon != null
     ? `https://www.google.com/maps?ll=${trk.lat},${trk.lon}&z=${mapZoomFor(trk)}&output=embed`
     : '';
+  const mapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(trk.address);
+  trackDetailIconRow.innerHTML = locIconRowHtml();
+  bindLocButtons(trackDetailIconRow, trk, mapsUrl);
   trackDetailOverlay.hidden = false;
   trackDetailCloseBtn.focus();
 }
@@ -2828,6 +2963,10 @@ trackDetailCloseBtn.addEventListener('click', closeTrackDetail);
 trackDetailOverlay.addEventListener('click', (e)=>{ if(e.target === trackDetailOverlay) closeTrackDetail(); });
 document.addEventListener('keydown', (e)=>{
   if(trackDetailOverlay.hidden) return;
+  // If the amenity-info popup is open on top of this modal (opened via a tap
+  // on this modal's own icon row), let its own keydown handler deal with
+  // Escape/Tab — otherwise both modals would close on a single Escape press.
+  if(!locOverlay.hidden) return;
   if(e.key === 'Escape'){ closeTrackDetail(); return; }
   if(e.key === 'Tab'){
     const focusable = [...trackDetailOverlay.querySelectorAll('button, a[href]')].filter(el => !el.hidden && el.offsetParent !== null);
