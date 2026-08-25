@@ -195,10 +195,10 @@
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .track-card:hover{transform:translateY(-3px); box-shadow:0 12px 24px rgba(28,29,31,0.1);}
-  .track-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
-  .track-top h3{font-size:23px; line-height:1.05;}
-  .top-chips{display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex:none;}
-  .distance-chip{font-family:'SF Mono',Menlo,Consolas,'Courier New',monospace; font-size:12px; font-weight:700; color:#fff; background:var(--asphalt); padding:4px 9px; border-radius:7px; white-space:nowrap;}
+  .track-top{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .track-top h3{font-size:23px; line-height:1.05; flex:1 1 190px; min-width:0;}
+  .top-chips{display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex:0 1 auto; max-width:100%;}
+  .distance-chip{font-family:'SF Mono',Menlo,Consolas,'Courier New',monospace; font-size:12px; font-weight:700; color:#fff; background:var(--asphalt); padding:4px 9px; border-radius:7px; white-space:normal; text-align:right; max-width:200px;}
   .away-chip{font-family:'SF Mono',Menlo,Consolas,'Courier New',monospace; font-size:11px; font-weight:700; color:var(--asphalt); background:var(--concrete); padding:3px 8px; border-radius:7px; white-space:nowrap;}
   .fav-star{background:none; border:none; cursor:pointer; font-size:18px; line-height:1; padding:2px; color:var(--ink-soft);}
   .fav-star.active{color:var(--signal);}
@@ -304,6 +304,102 @@
 
   footer{max-width:1180px; margin:0 auto; padding:20px; font-size:12px; color:var(--ink-soft); text-align:center;}
   .footer-freshness{margin:10px 0 0; font-size:11px; opacity:0.85;}
+
+  /* ---------- DASHBOARD POLISH: borough-coded cards, bib tags, motion ---------- */
+  :root{ --statenisland:#7a4a30; }
+
+  /* Bold accent underline under section titles, like a finish-line stripe */
+  .section-head h2{position:relative; padding-bottom:12px;}
+  .section-head h2::after{content:""; position:absolute; left:0; bottom:0; width:56px; height:4px; background:var(--signal); border-radius:2px;}
+
+  /* Borough-coded top stripe on every track card, matching the borough picker colors */
+  .track-card{border-top:4px solid var(--line); animation:cardIn .4s ease both; animation-delay:calc(var(--i,0) * 35ms);}
+  .track-card.b-manhattan{border-top-color:var(--signal);}
+  .track-card.b-brooklyn{border-top-color:var(--harbor);}
+  .track-card.b-queens{border-top-color:var(--park);}
+  .track-card.b-bronx{border-top-color:var(--track);}
+  .track-card.b-statenisland{border-top-color:var(--statenisland);}
+  @keyframes cardIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  @media (prefers-reduced-motion:reduce){ .track-card{animation:none;} }
+
+  /* Subtle pulse on the conditions dial whenever weather data refreshes */
+  @keyframes dialPulse{ 0%{box-shadow:0 0 0 0 rgba(255,90,31,0.45);} 100%{box-shadow:0 0 0 14px rgba(255,90,31,0);} }
+  .dial.wx-updated{animation:dialPulse .7s ease-out;}
+
+  /* ---------- RUNNER PROFILES & SNEAKERS ---------- */
+  .sneaker-btn{
+    background:var(--asphalt-2); border:1px solid rgba(255,255,255,0.18); color:#e9e7df;
+    border-radius:999px; width:34px; height:34px; font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .sneaker-btn:hover{border-color:var(--signal);}
+
+  .profiles-sheet{max-width:480px;}
+  .profile-active-row{display:flex; align-items:center; gap:10px; margin:0 0 16px; flex-wrap:wrap;}
+  .profile-active-row label{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em;}
+  .profile-active-row select{
+    flex:1 1 160px; border:1px solid var(--line); background:#fff; border-radius:9px;
+    padding:8px 10px; font-size:14px; color:var(--ink); font-weight:600;
+  }
+
+  .profile-list{display:flex; flex-direction:column; gap:14px; margin-bottom:16px;}
+  .profile-card{background:var(--concrete); border-radius:14px; padding:14px 16px;}
+  .profile-card.is-active{outline:2px solid var(--signal); outline-offset:-2px;}
+  .profile-card-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;}
+  .profile-card-head strong{font-family:'Arial Narrow',Arial,sans-serif; font-size:19px; letter-spacing:0.02em;}
+  .profile-active-tag{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--signal); margin-left:6px;}
+  .profile-delete-btn, .sneaker-delete-btn{
+    background:none; border:none; cursor:pointer; color:var(--ink-soft); font-size:15px; line-height:1; padding:3px 5px; flex:none;
+  }
+  .profile-delete-btn:hover, .sneaker-delete-btn:hover{color:var(--track);}
+
+  .sneaker-list{display:flex; flex-direction:column; gap:6px; margin-bottom:10px;}
+  .sneaker-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    background:#fff; border:1px solid var(--line); border-radius:9px; padding:7px 10px;
+  }
+  .sneaker-row .sneaker-info{display:flex; flex-direction:column; gap:1px; min-width:0;}
+  .sneaker-row .sneaker-name{font-size:13.5px; font-weight:700; overflow-wrap:anywhere;}
+  .sneaker-row .sneaker-surfaces{font-size:11px; color:var(--ink-soft);}
+  .empty-note.small{padding:12px; font-size:12.5px; margin:0 0 10px;}
+
+  .add-sneaker-form{background:#fff; border:1px dashed var(--line); border-radius:10px; padding:10px;}
+  .sneaker-name-input{
+    width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13.5px;
+    color:var(--ink); margin-bottom:8px; font-family:inherit;
+  }
+  .surface-check-row{display:flex; flex-wrap:wrap; gap:8px 12px; margin-bottom:10px;}
+  .surface-check-row label{display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--ink-soft); cursor:pointer;}
+  .add-sneaker-btn{
+    background:var(--asphalt); color:#fff; border:none; border-radius:8px; padding:8px 12px;
+    font-size:12.5px; font-weight:700; cursor:pointer;
+  }
+  .add-sneaker-btn:hover{background:var(--signal); color:#1c1d1f;}
+
+  .add-profile-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .new-profile-name-input{
+    flex:1 1 160px; border:1px solid var(--line); border-radius:9px; padding:9px 12px; font-size:14px;
+    color:var(--ink); font-family:inherit;
+  }
+  .add-profile-btn{
+    background:var(--signal); color:#1c1d1f; border:none; border-radius:9px; padding:9px 16px;
+    font-size:13.5px; font-weight:700; cursor:pointer; flex:none;
+  }
+  .add-profile-btn:hover{background:#e04d17;}
+
+  .shoe-rec-note{margin-top:6px; font-size:11.5px; color:var(--ink-soft); font-style:italic;}
+
+  /* ---------- TRACK DETAIL MODAL (overhead aerial diagram) ---------- */
+  .track-title-btn{
+    background:none; border:none; padding:0; margin:0; font:inherit; color:inherit;
+    text-align:left; cursor:pointer;
+  }
+  .track-title-btn:hover, .track-title-btn:focus-visible{ text-decoration:underline; }
+  .track-detail-sheet{ max-width:480px; }
+  .track-detail-map-wrap{
+    border-radius:14px; overflow:hidden; border:1px solid var(--line); margin-bottom:4px; background:var(--concrete);
+  }
+  .track-detail-map{ display:block; width:100%; height:340px; border:0; }
 </style>
 </head>
 <body>
@@ -312,6 +408,7 @@
   <div class="top-inner">
     <div class="lang-row">
       <select class="lang-select" id="langSelect" aria-label="Language"></select>
+      <button class="sneaker-btn" id="sneakerBtn" aria-label="Runner profiles and sneakers" aria-haspopup="dialog">👟</button>
     </div>
     <div class="kicker" id="txtKicker">Five boroughs · live conditions</div>
     <h1>SOUL<span>2</span>SOLE</h1>
@@ -396,6 +493,46 @@
     <p class="loc-track-name" id="locTrackNameEl"></p>
     <div class="loc-body" id="locBodyEl"></div>
     <a class="loc-dir-link" id="locDirLink" href="#" target="_blank" rel="noopener" hidden></a>
+  </div>
+</div>
+
+<div class="loc-overlay" id="profilesOverlay" hidden>
+  <div class="loc-sheet profiles-sheet" role="dialog" aria-modal="true" aria-labelledby="profilesTitleText">
+    <div class="loc-head">
+      <div class="loc-head-left">
+        <span class="loc-icon" aria-hidden="true">👟</span>
+        <h2 id="profilesTitleText">Runner Profiles &amp; Sneakers</h2>
+      </div>
+      <button class="loc-close" id="profilesCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <p class="loc-track-name" id="profilesIntroText">Add yourself and your sneakers — we'll match the right pair to every track.</p>
+
+    <div class="profile-active-row">
+      <label id="txtActiveProfileLabel" for="activeProfileSelect">Who's running?</label>
+      <select id="activeProfileSelect"></select>
+    </div>
+
+    <div class="profile-list" id="profileList"></div>
+
+    <div class="add-profile-row">
+      <input type="text" id="newProfileNameInput" class="new-profile-name-input" placeholder="Name" maxlength="40">
+      <button class="add-profile-btn" id="addProfileBtn">+ Add person</button>
+    </div>
+  </div>
+</div>
+
+<div class="loc-overlay" id="trackDetailOverlay" hidden>
+  <div class="loc-sheet track-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="trackDetailTitleText">
+    <div class="loc-head">
+      <div class="loc-head-left">
+        <span class="loc-icon" aria-hidden="true">🛰️</span>
+        <h2 id="trackDetailTitleText"></h2>
+      </div>
+      <button class="loc-close" id="trackDetailCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <div class="track-detail-map-wrap">
+      <iframe id="trackDetailMapFrame" class="track-detail-map" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Overhead aerial view of the track"></iframe>
+    </div>
   </div>
 </div>
 
@@ -881,7 +1018,7 @@ const TRACKS = {
       police:"NYPD Central Park Precinct — 86th St Transverse (inside the park), ~0.5 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule) — but dogs are not allowed on the reservoir running path itself at any time.",
       dogParks:"North Meadow Dog Run (~97th St) and East 60s Dog Run (5th Ave & 66th St), both within Central Park.",
-      transit:"6 train to 86 St (~0.6 mi walk), or the M1/M2/M3/M4 bus on 5th Ave at 90th St.", hasFountain:true, hasRestroom:true },
+      transit:"6 train to 86 St (~0.6 mi walk), or the M1/M2/M3/M4 bus on 5th Ave at 90th St." },
     { name:"Central Park Full Perimeter", distance:"6.0 mi loop", surface:"asphalt", lapMiles:6.0, lat:40.7812, lon:-73.9665,
       desc:"The classic park drive loop past every major landmark, from the Great Lawn to Harlem Hills.",
       hours:"6am – 1am (car-free most hours)", address:"Central Park, enter at 59th St & 5th Ave, Manhattan",
@@ -894,7 +1031,7 @@ const TRACKS = {
       police:"NYPD Central Park Precinct — 86th St Transverse (inside the park)",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am on the park drives and lawns (NYC Parks citywide rule, where not otherwise posted).",
       dogParks:"Bull Moose Dog Run (W 67th St), North Meadow Dog Run (~97th St), and East 60s Dog Run (5th Ave & 66th St).",
-      transit:"B/C train to 72 St (Central Park West), right by the park's west side.", hasFountain:true, hasRestroom:true },
+      transit:"B/C train to 72 St (Central Park West), right by the park's west side." },
     { name:"East River Park Track", distance:"~0.25 mi track", surface:"track", lapMiles:0.25, lat:40.7218, lon:-73.9765,
       desc:"A rubberized running track tucked between East 6th and East 10th Streets along the FDR.",
       hours:"6am – 9pm daily", address:"East River Park, FDR Dr & E 6th St, Manhattan",
@@ -907,7 +1044,7 @@ const TRACKS = {
       police:"NYPD 9th Precinct — 321 E 5th St, ~0.6 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas — dogs are not permitted on the rubberized track itself.",
       dogParks:"East River Park Dog Run, near Grand St.",
-      transit:"F train to East Broadway (~0.5–0.7 mi), or the M14D bus to the Grand St entrance.", hasFountain:true, hasRestroom:true },
+      transit:"F train to East Broadway (~0.5–0.7 mi), or the M14D bus to the Grand St entrance." },
     { name:"Hudson River Greenway", distance:"up to 12 mi one-way", surface:"asphalt", lapMiles:null, lat:40.7788, lon:-73.9900,
       lapNote:"Point-to-point path — no fixed lap. Turn around anywhere to make it an out-and-back.",
       desc:"Manhattan's full west-side waterfront path, from Fort Tryon Park down to Battery Park City.",
@@ -921,7 +1058,7 @@ const TRACKS = {
       police:"NYPD 20th Precinct — 120 W 82nd St, ~0.6 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in adjoining Riverside Park lawns (not on the paved greenway path itself).",
       dogParks:"Riverside Park Dog Run, near W 87th St.",
-      transit:"M66 bus to the river at W 66th St, or 1 train to 66 St–Lincoln Center (~0.6 mi).", hasFountain:true, hasRestroom:true },
+      transit:"M66 bus to the river at W 66th St, or 1 train to 66 St–Lincoln Center (~0.6 mi)." },
     { name:"Inwood Hill Park Trails", distance:"varies", surface:"trail", lapMiles:null, lat:40.8683, lon:-73.9210,
       lapNote:"Informal trail network, not a marked loop — length depends on the route you piece together.",
       desc:"Manhattan's last natural forest — root-covered dirt trails above the Hudson and Harlem Rivers.",
@@ -935,7 +1072,7 @@ const TRACKS = {
       police:"NYPD 34th Precinct — 4295 Broadway, ~0.7 mi",
       petHours:"Leash required at all times on the forest trails — this is a natural/forever-wild area where the citywide off-leash window does not apply; check posted signage.",
       dogParks:"Inwood Hill Park Dog Run, near Isham St and the ballfields.",
-      transit:"A train to Inwood–207 St (~0.5 mi), or the Bx7/M100 bus at Broadway & Dyckman St.", hasFountain:true, hasRestroom:true },
+      transit:"A train to Inwood–207 St (~0.5 mi), or the Bx7/M100 bus at Broadway & Dyckman St." },
     { name:"Riverbank State Park — Outdoor Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.8267, lon:-73.9548,
       desc:"An 8-lane, 400-meter rubberized track on a state park built on a platform over the Hudson River, with an infield soccer/football field.",
       hours:"6:30am – 10pm Mon–Fri, 6:30am – 6:30pm Sat–Sun (Athletics Complex hours — differs from standard park hours)", address:"679 Riverside Drive, New York, NY 10031",
@@ -948,7 +1085,7 @@ const TRACKS = {
       police:"NYPD 30th Precinct — 451 W 151st St, ~0.4 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed within Riverbank State Park itself.",
-      transit:"A/C/B/D trains to 145 St, or 1 train to 145 St & Broadway — both a few blocks away.", hasFountain:false, hasRestroom:true },
+      transit:"A/C/B/D trains to 145 St, or 1 train to 145 St & Broadway — both a few blocks away." },
     { name:"74th Street Track and Field", distance:"~0.25 mi loop (informal, unmeasured)", surface:"gravel", lapMiles:null, lat:40.7825, lon:-73.9877,
       desc:"A dirt-and-cinder oval encircling a grass multi-use field in Riverside Park, tucked below Riverside Drive near the 72nd St dog run.",
       hours:"6am – 1am (park hours)", address:"Riverside Park at Riverside Drive & West 74th Street, New York, NY 10023",
@@ -962,7 +1099,7 @@ const TRACKS = {
       police:"NYPD 20th Precinct — 120 W 82nd St, ~0.5 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"The 72nd Street Dog Run is right next to this field, inside Riverside Park.",
-      transit:"1/2/3 trains to 72 St & Broadway, a few blocks east.", hasFountain:false, hasRestroom:false },
+      transit:"1/2/3 trains to 72 St & Broadway, a few blocks east." },
     { name:"Highbridge Park — Old Croton Aqueduct Trail", distance:"~1 mi (in-park segment)", surface:"trail", lapMiles:null, lat:40.8375, lon:-73.9377,
       desc:"An unpaved, historic aqueduct-route trail through rocky, wooded terrain with river and High Bridge overlooks.",
       hours:"6am – 1am (park hours, not independently confirmed for this trail)", address:"Trailhead at Edgecombe Avenue & West 158th Street, New York, NY 10032",
@@ -976,7 +1113,7 @@ const TRACKS = {
       police:"NYPD 33rd Precinct — 2320 Amsterdam Ave, ~0.6 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed near this trailhead.",
-      transit:"C train to 163 St–Amsterdam Ave, closest to the Edgecombe Ave side of the park.", hasFountain:false, hasRestroom:true },
+      transit:"C train to 163 St–Amsterdam Ave, closest to the Edgecombe Ave side of the park." },
     { name:"Fort Tryon Park Trail Network", distance:"8+ mi of pathways", surface:"trail", lapMiles:null, lat:40.86, lon:-73.9313,
       desc:"A hilly, Olmsted-designed park with an extensive mix of paved walks and natural trail sections, Hudson River and Palisades views, next to The Cloisters.",
       hours:"6am – 1am (park hours, not independently confirmed)", address:"Spans roughly W 192nd St/Fort Washington Ave to Riverside Dr near W 200th St, New York, NY 10040",
@@ -990,7 +1127,7 @@ const TRACKS = {
       police:"NYPD 34th Precinct — 4295 Broadway, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed within Fort Tryon Park.",
-      transit:"A train to 190 St (elevator up to Fort Washington Ave), or M4/M98 buses terminating at the park.", hasFountain:false, hasRestroom:true }
+      transit:"A train to 190 St (elevator up to Fort Washington Ave), or M4/M98 buses terminating at the park." }
   ],
   brooklyn: [
     { name:"Prospect Park Inner Loop", distance:"3.35 mi loop", surface:"asphalt", lapMiles:3.35, lat:40.6743, lon:-73.9707,
@@ -1005,7 +1142,7 @@ const TRACKS = {
       police:"NYPD 78th Precinct — 65 6th Ave, ~0.5 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am across most of the park, including the inner loop drive.",
       dogParks:"Third Street Dog Run, near Prospect Park West & 3rd St.",
-      transit:"2/3 train to Grand Army Plaza, right at the park's entrance.", hasFountain:true, hasRestroom:true },
+      transit:"2/3 train to Grand Army Plaza, right at the park's entrance." },
     { name:"Coney Island Boardwalk", distance:"~3 mi", surface:"boardwalk", lapMiles:null, lat:40.5755, lon:-73.9860,
       lapNote:"Straight boardwalk, not a loop — most runners go out-and-back for the full 3 miles.",
       desc:"The Riegelmann Boardwalk, running past the Cyclone and Wonder Wheel with open beach views.",
@@ -1019,7 +1156,7 @@ const TRACKS = {
       police:"NYPD 60th Precinct — 2951 W 8th St, ~0.4 mi",
       petHours:"Leashed at all times on the boardwalk; dogs are prohibited on the beach sand May 1 – Oct 1 under NYC beach rules.",
       dogParks:"No fenced dog run directly on the boardwalk — nearest options are inland in surrounding neighborhood parks.",
-      transit:"D/F/N/Q trains to Coney Island–Stillwell Ave.", hasFountain:true, hasRestroom:true },
+      transit:"D/F/N/Q trains to Coney Island–Stillwell Ave." },
     { name:"Fort Greene Park Fitness Path", distance:"~0.57 mi loop (1.75 laps/mi)", surface:"asphalt", lapMiles:0.5714, lat:40.6896, lon:-73.9736,
       desc:"A hilly loop past the Prison Ship Martyrs' Monument, capped by the park's famous stairs.",
       hours:"6am – 1am", address:"Fort Greene Park, DeKalb Ave & Washington Park, Brooklyn",
@@ -1032,7 +1169,7 @@ const TRACKS = {
       police:"NYPD 88th Precinct — 298 Classon Ave, ~0.7 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am throughout the park.",
       dogParks:"Fort Greene Park Dog Run, near the DeKalb Ave entrance.",
-      transit:"C train to Lafayette Ave, or G train to Fulton St.", hasFountain:true, hasRestroom:true },
+      transit:"C train to Lafayette Ave, or G train to Fulton St." },
     { name:"Shore Parkway Greenway (Dyker Beach Loop)", distance:"2.1 mi loop", surface:"asphalt", lapMiles:2.1, lat:40.6122, lon:-74.0089,
       desc:"A flat loop around Dyker Beach Golf Course with Verrazzano-Narrows Bridge views nearby.",
       hours:"Open 24 hours", address:"Poly Place & 14th Ave, Bensonhurst, Brooklyn",
@@ -1045,7 +1182,7 @@ const TRACKS = {
       police:"NYPD 68th Precinct — 333 65th St, ~1.3 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am along the greenway (not inside the golf course).",
       dogParks:"Bensonhurst Park Dog Run, ~1.5 mi west.",
-      transit:"B64 bus (Bay Ridge–Coney Island) near 14th Ave; nearest subway (D train, 18 Ave) is over a mile away.", hasFountain:true, hasRestroom:true },
+      transit:"B64 bus (Bay Ridge–Coney Island) near 14th Ave; nearest subway (D train, 18 Ave) is over a mile away." },
     { name:"Brooklyn Bridge Park Waterfront", distance:"1.3 mi one-way", surface:"asphalt", lapMiles:null, lat:40.7024, lon:-73.9964,
       lapNote:"One-way waterfront path — double back the way you came to add distance.",
       desc:"Piers and lawns along the East River with Lower Manhattan and the Brooklyn Bridge as backdrop.",
@@ -1059,7 +1196,7 @@ const TRACKS = {
       police:"NYPD 84th Precinct — 301 Gold St, ~0.8 mi",
       petHours:"Leashed at all times — Brooklyn Bridge Park is a state-run park without the citywide off-leash exemption; check posted signage.",
       dogParks:"Brooklyn Bridge Park Dog Run, near Pier 6.",
-      transit:"2/3 train to Clark St (~5-min walk); B25 bus at Old Fulton St/Elizabeth Pl also close.", hasFountain:true, hasRestroom:true },
+      transit:"2/3 train to Clark St (~5-min walk); B25 bus at Old Fulton St/Elizabeth Pl also close." },
     { name:"McCarren Park Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.7191, lon:-73.9506,
       desc:"A quarter-mile synthetic track ringing a turf athletic field in the middle of McCarren Park, heavily used by local run clubs for structured workouts.",
       hours:"6am – 1am (park hours)", address:"776 Lorimer St, Brooklyn, NY 11222",
@@ -1072,7 +1209,7 @@ const TRACKS = {
       police:"NYPD 94th Precinct — 100 Meserole Ave, ~0.3 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule) — dogs are not allowed on the track/turf field itself.",
       dogParks:"McCarren Park Dog Run is on-site, on the park's north side.",
-      transit:"Nassau Ave (G train) is closest; Bedford Ave (L) and Lorimer St/Metropolitan Ave (G/L) are also within walking distance.", hasFountain:true, hasRestroom:true },
+      transit:"Nassau Ave (G train) is closest; Bedford Ave (L) and Lorimer St/Metropolitan Ave (G/L) are also within walking distance." },
     { name:"Marine Park Loop (The Oval)", distance:"0.8 mi loop", surface:"asphalt", lapMiles:0.8, lat:40.6021, lon:-73.9209,
       desc:"A flat, paved loop shared by runners, walkers, and cyclists inside Brooklyn's largest park, bordered by salt marsh and Gerritsen Creek.",
       hours:"6am – 1am (park hours)", address:"Main entrance near Avenue U & Stuart St, Brooklyn, NY 11234",
@@ -1085,7 +1222,7 @@ const TRACKS = {
       police:"NYPD 63rd Precinct — 1739 E 22nd St, ~1.5 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at Marine Park.",
-      transit:"B3 bus along Avenue U or B41 along Flatbush Ave, both serving the park directly. No subway nearby.", hasFountain:false, hasRestroom:true },
+      transit:"B3 bus along Avenue U or B41 along Flatbush Ave, both serving the park directly. No subway nearby." },
     { name:"Red Hook Recreation Area Track", distance:"1/6 mi lap (~0.17 mi)", surface:"track", lapMiles:0.1667, lat:40.6746, lon:-74.0069,
       desc:"A small, historic oval track — shorter than a standard quarter-mile — inside Red Hook Park's ballfield complex, popular with local run clubs.",
       hours:"6am – 1am (park hours)", address:"155 Bay St, Brooklyn, NY 11231",
@@ -1098,7 +1235,7 @@ const TRACKS = {
       police:"NYPD 76th Precinct — 191 Union St, ~0.7 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed near this track.",
-      transit:"Smith–9th Sts (F/G), roughly a 15–20 min walk; B61 bus serves Red Hook directly along Van Brunt St.", hasFountain:false, hasRestroom:true }
+      transit:"Smith–9th Sts (F/G), roughly a 15–20 min walk; B61 bus serves Red Hook directly along Van Brunt St." }
   ],
   queens: [
     { name:"Astoria Park Track", distance:"~0.25 mi track", surface:"track", lapMiles:0.25, lat:40.7794, lon:-73.9236,
@@ -1113,7 +1250,7 @@ const TRACKS = {
       police:"NYPD 114th Precinct — 34-16 Astoria Blvd, ~1.0 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open lawn areas — not on the track itself.",
       dogParks:"Astoria Park Dog Run, near Shore Blvd.",
-      transit:"Q69 bus terminates right at the park; N/W train at Astoria Blvd is ~0.8 mi.", hasFountain:true, hasRestroom:true },
+      transit:"Q69 bus terminates right at the park; N/W train at Astoria Blvd is ~0.8 mi." },
     { name:"Astoria Park Shore Path", distance:"0.6 mi", surface:"asphalt", lapMiles:null, lat:40.7809, lon:-73.9256,
       lapNote:"Runs one direction along the river wall — out-and-back to double it.",
       desc:"A short waterfront stretch on Shore Blvd with East River and bridge views.",
@@ -1127,7 +1264,7 @@ const TRACKS = {
       police:"NYPD 114th Precinct — 34-16 Astoria Blvd, ~1.1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open lawn areas — not on the paved shore path itself.",
       dogParks:"Astoria Park Dog Run, near Shore Blvd.",
-      transit:"Q69 bus terminates at Astoria Park; N/W train at Astoria Blvd is ~1 mi.", hasFountain:true, hasRestroom:true },
+      transit:"Q69 bus terminates at Astoria Park; N/W train at Astoria Blvd is ~1 mi." },
     { name:"Flushing Meadows — Meadow Lake Trail", distance:"~1.5 mi loop", surface:"asphalt", lapMiles:1.5, lat:40.7395, lon:-73.8407,
       desc:"A longer loop around the boathouse lake, popular with rowers and cyclists too.",
       hours:"6am – 9pm", address:"Meadow Lake, Flushing Meadows Corona Park, Queens",
@@ -1140,7 +1277,7 @@ const TRACKS = {
       police:"NYPD 109th Precinct — 37-05 Union St, ~1.5 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas away from the lake edge.",
       dogParks:"Flushing Meadows Corona Park Dog Run, near the Passerelle bridge.",
-      transit:"Q64 bus on Union Turnpike near the boathouse; E/F train at Kew Gardens–Union Tpke is ~1 mi.", hasFountain:true, hasRestroom:true },
+      transit:"Q64 bus on Union Turnpike near the boathouse; E/F train at Kew Gardens–Union Tpke is ~1 mi." },
     { name:"Flushing Meadows — Willow Lake Trail", distance:"~1.2 mi loop", surface:"trail", lapMiles:1.2, lat:40.7325, lon:-73.8390,
       desc:"A quieter natural path along a protected lake just south of Meadow Lake.",
       hours:"Dawn – dusk", address:"Willow Lake, Flushing Meadows Corona Park, Queens",
@@ -1153,7 +1290,7 @@ const TRACKS = {
       police:"NYPD 109th Precinct — 37-05 Union St, ~1.9 mi",
       petHours:"Leash required at all times — Willow Lake is a protected nature preserve where the citywide off-leash window does not apply.",
       dogParks:"Flushing Meadows Corona Park Dog Run, near the Passerelle bridge (back toward Meadow Lake).",
-      transit:"Q46 bus on Union Turnpike near the trailhead; E/F train at Kew Gardens–Union Tpke is ~1.3 mi.", hasFountain:false, hasRestroom:false },
+      transit:"Q46 bus on Union Turnpike near the trailhead; E/F train at Kew Gardens–Union Tpke is ~1.3 mi." },
     { name:"Kissena Park Fitness Path", distance:"~0.5 mi loop (2 laps/mi)", surface:"gravel", lapMiles:0.5, lat:40.7429, lon:-73.8129,
       desc:"A shaded loop around Kissena Lake, lined with weeping willows.",
       hours:"6am – 9pm", address:"Oak Ave & 164th St, Flushing, Queens",
@@ -1166,7 +1303,7 @@ const TRACKS = {
       police:"NYPD 107th Precinct — 71-01 Parsons Blvd, ~1.2 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas.",
       dogParks:"Kissena Park Dog Run, near the velodrome.",
-      transit:"Q25/Q34 bus at Kissena Blvd/Booth Memorial Ave; 7 train at Flushing–Main St is ~1.3 mi.", hasFountain:true, hasRestroom:true },
+      transit:"Q25/Q34 bus at Kissena Blvd/Booth Memorial Ave; 7 train at Flushing–Main St is ~1.3 mi." },
     { name:"Juniper Valley Park Track", distance:"~0.25 mi track", surface:"track", lapMiles:0.25, lat:40.7189, lon:-73.8815,
       desc:"A neighborhood track on the park's west side, plus a paved fitness loop around the ballfields.",
       hours:"6am – 9pm", address:"Juniper Valley Park, Lutheran Ave, Middle Village, Queens",
@@ -1179,7 +1316,7 @@ const TRACKS = {
       police:"NYPD 104th Precinct — 64-2 Catalpa Ave, ~0.6 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas — not on the track itself.",
       dogParks:"Juniper Valley Park Dog Run.",
-      transit:"M train to Metropolitan Ave (~0.7 mi); Q54 bus on Eliot Ave runs closer.", hasFountain:true, hasRestroom:true },
+      transit:"M train to Metropolitan Ave (~0.7 mi); Q54 bus on Eliot Ave runs closer." },
     { name:"Victory Field (Frederick D. Schmidt Track)", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.6989, lon:-73.8567,
       desc:"A historic 1925 track-and-field complex at the northeast end of Forest Park, with turf infield ballfields — a classic quarter-mile oval.",
       hours:"6am – 1am (park hours; some aggregators list 6am–9pm for the fenced athletic field — not independently confirmed)", address:"Woodhaven Blvd & Myrtle Ave, Forest Park, Woodhaven, NY 11421",
@@ -1192,7 +1329,7 @@ const TRACKS = {
       police:"NYPD 102nd Precinct — 87-34 118th St, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at this location within Forest Park.",
-      transit:"Q11/Q21 buses near Woodhaven Blvd, at Forest Park Drive.", hasFountain:false, hasRestroom:false },
+      transit:"Q11/Q21 buses near Woodhaven Blvd, at Forest Park Drive." },
     { name:"Forest Park Bridle Path", distance:"1–4 mi (marked loops)", surface:"gravel", lapMiles:null, lat:40.6934, lon:-73.8479,
       desc:"Wooded, crushed-stone paths through Forest Park's oak forest — shaded, hilly, and popular with trail runners.",
       hours:"6am – 1am (park hours)", address:"Forest Park, Woodhaven, NY 11421",
@@ -1206,7 +1343,7 @@ const TRACKS = {
       police:"NYPD 102nd Precinct — 87-34 118th St, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed directly on the bridle path.",
-      transit:"Q11/Q21/Q52/Q53 buses along Woodhaven Blvd; Forest Parkway (J train) sits near the eastern park edge.", hasFountain:false, hasRestroom:true },
+      transit:"Q11/Q21/Q52/Q53 buses along Woodhaven Blvd; Forest Parkway (J train) sits near the eastern park edge." },
     { name:"Baisley Pond Park — Running Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.6733, lon:-73.786,
       desc:"A running track inside a large South Jamaica park built around a 30-acre pond, with a well-used loop route around the water as well.",
       hours:"6am – 1am (park hours; one aggregator lists 6am–9pm for the track — not independently confirmed)", address:"Bounded by Sutphin Blvd, North Conduit Ave, Baisley Blvd and Rockaway Blvd, Jamaica, NY 11434",
@@ -1220,7 +1357,7 @@ const TRACKS = {
       police:"NYPD 103rd Precinct — 168-02 91st Ave, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at Baisley Pond Park.",
-      transit:"Q6, Q8, Q9, Q40, Q41, Q60 buses near Sutphin Blvd/Archer Ave; Sutphin Blvd–Archer Av–JFK Airport (E/J/Z) is the closest subway, over a mile away.", hasFountain:false, hasRestroom:false },
+      transit:"Q6, Q8, Q9, Q40, Q41, Q60 buses near Sutphin Blvd/Archer Ave; Sutphin Blvd–Archer Av–JFK Airport (E/J/Z) is the closest subway, over a mile away." },
     { name:"Roy Wilkins Recreation Center — Running Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.6919, lon:-73.7714,
       desc:"A full track-and-field facility inside a busy South Jamaica recreation complex, alongside ballfields, courts, and an indoor pool.",
       hours:"6am – 1am (park hours)", address:"177-01 Baisley Blvd, Jamaica, NY 11434",
@@ -1234,7 +1371,7 @@ const TRACKS = {
       police:"NYPD 113th Precinct — 167-02 Baisley Blvd, ~0.3 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at this location.",
-      transit:"Q4, Q5, Q84, Q85 buses along Merrick Blvd/Baisley Blvd; Jamaica Center (E/J/Z) subway is a couple miles away.", hasFountain:false, hasRestroom:true },
+      transit:"Q4, Q5, Q84, Q85 buses along Merrick Blvd/Baisley Blvd; Jamaica Center (E/J/Z) subway is a couple miles away." },
     { name:"Detective Keith L. Williams Park — Running Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.689, lon:-73.7813,
       desc:"A South Jamaica neighborhood park recently reconstructed with a dedicated track and field, alongside a public pool, courts, and playground.",
       hours:"6am – 1am (park hours)", address:"Liberty Ave between 172nd St and 173rd St, Jamaica, NY 11434",
@@ -1248,7 +1385,7 @@ const TRACKS = {
       police:"NYPD 113th Precinct — 167-02 Baisley Blvd, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at this location.",
-      transit:"Q112 bus runs directly on Liberty Ave; Q56 serves nearby Jamaica Ave.", hasFountain:false, hasRestroom:true },
+      transit:"Q112 bus runs directly on Liberty Ave; Q56 serves nearby Jamaica Ave." },
     { name:"Rockaway Beach and Boardwalk", distance:"5.5 mi one-way", surface:"boardwalk", lapMiles:null, lat:40.5825, lon:-73.832,
       desc:"NYC's flagship oceanfront running boardwalk, running from Far Rockaway to Rockaway Park with continuous Atlantic views.",
       hours:"Not confirmed — beach-adjacent, likely follows seasonal beach hours rather than the standard 6am–1am park default.", address:"Runs from Beach 9th St (Far Rockaway) to Beach 126th St (Rockaway Park), Queens, NY",
@@ -1262,7 +1399,7 @@ const TRACKS = {
       police:"NYPD 100th Precinct — 92-40 Rockaway Beach Blvd",
       petHours:"Standard NYC Parks leash rule applies (leashed 9am–9pm; off-leash 9pm–9am) — check for beach-specific seasonal dog restrictions.",
       dogParks:"No dedicated off-leash dog run confirmed directly on the boardwalk.",
-      transit:"A/S trains to Beach 90th St, Beach 98th St, Beach 105th St, or Rockaway Park–Beach 116th St, each dropping you within a block or two of the boardwalk at different points.", hasFountain:false, hasRestroom:true }
+      transit:"A/S trains to Beach 90th St, Beach 98th St, Beach 105th St, or Rockaway Park–Beach 116th St, each dropping you within a block or two of the boardwalk at different points." }
   ],
   bronx: [
     { name:"Van Cortlandt Stadium Track", distance:"0.25 mi track", surface:"track", lapMiles:0.25, lat:40.8976, lon:-73.8965,
@@ -1277,7 +1414,7 @@ const TRACKS = {
       police:"NYPD 50th Precinct — 3450 Kingsbridge Ave, ~0.8 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am elsewhere in the park — dogs are not permitted on the stadium track itself.",
       dogParks:"Van Cortlandt Park Dog Run, near the golf course.",
-      transit:"1 train to Van Cortlandt Park–242 St (~0.6 mi), or Bx9 bus on Broadway.", hasFountain:true, hasRestroom:true },
+      transit:"1 train to Van Cortlandt Park–242 St (~0.6 mi), or Bx9 bus on Broadway." },
     { name:"Van Cortlandt Cross Country Course", distance:"3 mi & 5 mi loops", surface:"trail", lapMiles:null, lat:40.8990, lon:-73.8940,
       lapNote:"Two marked loops (3 mi and 5 mi) rather than a single lap — pick your distance at the trailhead.",
       desc:"One of the country's most storied cross-country courses — rolling grass and dirt through 'Vault Hill' and 'The Back Woods.'",
@@ -1291,7 +1428,7 @@ const TRACKS = {
       police:"NYPD 50th Precinct — 3450 Kingsbridge Ave, ~0.9 mi",
       petHours:"Leash required at all times on the cross country course itself; the broader park follows the citywide 9pm–9am off-leash window elsewhere.",
       dogParks:"Van Cortlandt Park Dog Run, near the golf course.",
-      transit:"1 train to Van Cortlandt Park–242 St; Bx34 bus on Van Cortlandt Park East.", hasFountain:false, hasRestroom:false },
+      transit:"1 train to Van Cortlandt Park–242 St; Bx34 bus on Van Cortlandt Park East." },
     { name:"Van Cortlandt Parade Ground Path", distance:"1.5 mi loop", surface:"asphalt", lapMiles:1.5, lat:40.8940, lon:-73.8890,
       desc:"A flatter, fitness-station-lined loop around the historic Parade Ground fields.",
       hours:"6am – 9pm", address:"Van Cortlandt Park Parade Ground, Bronx",
@@ -1304,7 +1441,7 @@ const TRACKS = {
       police:"NYPD 50th Precinct — 3450 Kingsbridge Ave, ~0.6 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am on the surrounding fields.",
       dogParks:"Van Cortlandt Park Dog Run, near the golf course.",
-      transit:"1 train to Van Cortlandt Park–242 St — noted as \"near the Parade Ground\" by the park alliance.", hasFountain:true, hasRestroom:true },
+      transit:"1 train to Van Cortlandt Park–242 St — noted as \"near the Parade Ground\" by the park alliance." },
     { name:"Soundview Park Fitness Path", distance:"~0.25 mi core loop (4 laps/mi)", surface:"asphalt", lapMiles:0.25, lat:40.8195, lon:-73.8688,
       lapNote2:"Full riverside path runs about 1.5 mi one-way; the 4-laps/mile loop is the fitness circuit at the park's center.",
       desc:"A riverside path tracing the Bronx River through Clason Point, with a tighter fitness loop at its center.",
@@ -1318,7 +1455,7 @@ const TRACKS = {
       police:"NYPD 43rd Precinct — 900 Fteley Ave, ~1.4 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas.",
       dogParks:"Soundview Park Dog Run.",
-      transit:"Bx27 bus (expanded to serve the park); 6 train at Morrison Ave–Soundview is ~1 mi.", hasFountain:true, hasRestroom:true },
+      transit:"Bx27 bus (expanded to serve the park); 6 train at Morrison Ave–Soundview is ~1 mi." },
     { name:"Orchard Beach Promenade", distance:"1.1 mi", surface:"boardwalk", lapMiles:null, lat:40.8703, lon:-73.7935,
       lapNote:"One-way beachfront promenade — out-and-back for extra distance.",
       desc:"A beachfront promenade along the city's largest park, with sunrise views over the Sound.",
@@ -1332,7 +1469,7 @@ const TRACKS = {
       police:"NYPD 45th Precinct — 2877 Randall Ave, ~2.0 mi",
       petHours:"Leashed at all times on the promenade; dogs are prohibited on the beach sand May 1 – Oct 1 under NYC beach rules.",
       dogParks:"Pelham Bay Park Dog Run, near the Bartow-Pell traffic circle.",
-      transit:"Bx29 bus (year-round) via transfer from the 6 train at Pelham Bay Park; Bx12/Bx12-SBS on summer weekends.", hasFountain:true, hasRestroom:true },
+      transit:"Bx29 bus (year-round) via transfer from the 6 train at Pelham Bay Park; Bx12/Bx12-SBS on summer weekends." },
     { name:"Joseph Yancey Track and Field", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.8296, lon:-73.9268,
       desc:"A competitive-grade 400m synthetic track sitting on a roof deck adjoining Mullaly Park and Yankee Stadium — one of the best tracks in the Bronx.",
       hours:"6am – 10pm (differs from standard park hours)", address:"E 161st Street & Macombs Dam Bridge, Bronx, NY 10451",
@@ -1345,7 +1482,7 @@ const TRACKS = {
       police:"NYPD 44th Precinct — 2 E 169th St, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at Macombs Dam Park.",
-      transit:"4/B/D trains to 161 St–Yankee Stadium, a short walk.", hasFountain:false, hasRestroom:false },
+      transit:"4/B/D trains to 161 St–Yankee Stadium, a short walk." },
     { name:"Williamsbridge Oval Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.8734, lon:-73.8724,
       desc:"A historic reservoir-turned-park in the northwest Bronx with a synthetic turf field ringed by a running track, plus a full recreation center.",
       hours:"6am – 1am (park hours)", address:"3225 Reservoir Oval East, Bronx, NY 10467",
@@ -1359,7 +1496,7 @@ const TRACKS = {
       police:"NYPD 47th Precinct — 4111 Laconia Ave, ~1.2 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at Williamsbridge Oval.",
-      transit:"D train to 205 St (last stop, ~1 min walk), or 4 train to Mosholu Pkwy (~4 blocks).", hasFountain:false, hasRestroom:true },
+      transit:"D train to 205 St (last stop, ~1 min walk), or 4 train to Mosholu Pkwy (~4 blocks)." },
     { name:"St. Mary's Park Track", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.8102, lon:-73.9106,
       desc:"A South Bronx park track that's rarely crowded on weekday mornings, with NYRR periodically hosting free community Open Run events here.",
       hours:"6am – 10pm", address:"450 St. Ann's Avenue, Bronx, NY 10455",
@@ -1373,7 +1510,7 @@ const TRACKS = {
       police:"NYPD 40th Precinct — 257 Alexander Ave, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at St. Mary's Park.",
-      transit:"6 train to East 143rd Street–St. Mary's Street.", hasFountain:false, hasRestroom:true },
+      transit:"6 train to East 143rd Street–St. Mary's Street." },
     { name:"Soundview Park Track and Field", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.8177, lon:-73.8697,
       desc:"A purpose-built, rubberized 400-meter regulation track-and-field complex (opened 2014) with bleachers and adult fitness equipment — distinct from the park's separate fitness path.",
       hours:"6am – 1am (park hours)", address:"Soundview Park, near Lafayette Ave & Bronx River Ave, Bronx, NY 10473",
@@ -1386,7 +1523,7 @@ const TRACKS = {
       police:"NYPD 43rd Precinct — 900 Fteley Ave, ~1 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at this location within Soundview Park.",
-      transit:"6 train to Morrison Ave–Soundview or Elder Ave, both near the park.", hasFountain:false, hasRestroom:false },
+      transit:"6 train to Morrison Ave–Soundview or Elder Ave, both near the park." },
     { name:"Pelham Bay Park Track and Athletic Field", distance:"0.25 mi lap (~400 m)", surface:"track", lapMiles:0.25, lat:40.8547, lon:-73.8087,
       desc:"A track-and-field facility in the interior of Pelham Bay Park, paired with an athletic pitch — distinct from the Split Rock golf-course loop road and from Orchard Beach.",
       hours:"6am – 10pm", address:"Watt Avenue & Middletown Road, Bronx, NY 10465",
@@ -1400,7 +1537,7 @@ const TRACKS = {
       police:"NYPD 45th Precinct — 2877 Barkley Ave, ~1.5 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at this location within Pelham Bay Park.",
-      transit:"6 train to Pelham Bay Park (last stop), then bus or a longer walk into the park interior.", hasFountain:false, hasRestroom:false }
+      transit:"6 train to Pelham Bay Park (last stop), then bus or a longer walk into the park interior." }
   ],
   statenisland: [
     { name:"Ocean Breeze Athletic Complex Track", distance:"200m indoor track", surface:"track", lapMiles:0.1243, lat:40.5745, lon:-74.1065,
@@ -1415,7 +1552,7 @@ const TRACKS = {
       police:"NYPD 122nd Precinct — 2320 Hylan Blvd, ~1.6 mi",
       petHours:"Dogs are not permitted inside the indoor facility. Surrounding Ocean Breeze Park follows the citywide 9pm–9am off-leash window where posted.",
       dogParks:"Doey's Dog Run, South Beach.",
-      transit:"Father Capodanno Blvd & Delaware Ave bus stop — S51, S52, S78, S81 local, plus SIM5/SIM5x/SIM6/SIM6x express.", hasFountain:true, hasRestroom:true },
+      transit:"Father Capodanno Blvd & Delaware Ave bus stop — S51, S52, S78, S81 local, plus SIM5/SIM5x/SIM6/SIM6x express." },
     { name:"Staten Island Boardwalk", distance:"2.5 mi", surface:"boardwalk", lapMiles:null, lat:40.5875, lon:-74.0725,
       lapNote:"Straight boardwalk — most runners go out-and-back for the full distance.",
       desc:"A long, straight waterfront boardwalk facing the Verrazzano-Narrows Bridge and Coney Island.",
@@ -1429,7 +1566,7 @@ const TRACKS = {
       police:"NYPD 122nd Precinct — 2320 Hylan Blvd, ~1.3 mi",
       petHours:"Leashed at all times on the boardwalk; dogs are prohibited on the beach sand May 1 – Oct 1 under NYC beach rules.",
       dogParks:"Doey's Dog Run, South Beach.",
-      transit:"Father Capodanno Blvd & Seaview Ave bus stop, served by the S51.", hasFountain:true, hasRestroom:true },
+      transit:"Father Capodanno Blvd & Seaview Ave bus stop, served by the S51." },
     { name:"Clove Lakes Park Fitness Path", distance:"~0.36 mi loop (2.75 laps/mi)", surface:"asphalt", lapMiles:0.3636, lat:40.6188, lon:-74.1136,
       desc:"A shaded loop past ponds and old-growth trees in the middle of the island.",
       hours:"6am – 9pm", address:"Clove Lakes Park, Clove Rd, Staten Island",
@@ -1442,7 +1579,7 @@ const TRACKS = {
       police:"NYPD 120th Precinct — 78 Richmond Terrace, ~1.8 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas away from the lakes.",
       dogParks:"Clove Lakes Park Dog Run.",
-      transit:"Victory Blvd & Clove Rd bus stop, served by the S62 (S66/S61 nearby).", hasFountain:true, hasRestroom:true },
+      transit:"Victory Blvd & Clove Rd bus stop, served by the S62 (S66/S61 nearby)." },
     { name:"Silver Lake Park Loop", distance:"varies (0.7 mi spur + lake loop)", surface:"asphalt", lapMiles:null, lat:40.6194, lon:-74.0937,
       lapNote:"A 0.7 mi spur up Victory Blvd connects to a separate loop around the lake — no single fixed lap.",
       desc:"A path up Victory Blvd into a loop around Silver Lake itself.",
@@ -1456,7 +1593,7 @@ const TRACKS = {
       police:"NYPD 120th Precinct — 78 Richmond Terrace, ~2.0 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am in the park's open areas.",
       dogParks:"Silver Lake Park Dog Run, near the tennis courts.",
-      transit:"Victory Blvd/Silver Lake Apartments bus stop, served by the S61/S62.", hasFountain:true, hasRestroom:true },
+      transit:"Victory Blvd/Silver Lake Apartments bus stop, served by the S61/S62." },
     { name:"The Greenbelt Trails", distance:"varies (miles of trail network)", surface:"trail", lapMiles:null, lat:40.5820, lon:-74.1280,
       lapNote:"A connected trail network, not a single loop — length depends on which trails you link together.",
       desc:"Forested hiking and running trails through one of the city's last undisturbed woodlands, up to Todt Hill.",
@@ -1470,7 +1607,7 @@ const TRACKS = {
       police:"NYPD 122nd Precinct — 2320 Hylan Blvd, ~2.6 mi",
       petHours:"Leash required at all times — the Greenbelt's woodlands are protected natural areas where the citywide off-leash window does not apply.",
       dogParks:"Willowbrook Park Dog Run, ~2 mi away.",
-      transit:"Bus stop on Rockland Ave near Nevada Ave, served by the S54.", hasFountain:false, hasRestroom:false },
+      transit:"Bus stop on Rockland Ave near Nevada Ave, served by the S54." },
     { name:"Freshkills Park — North Park (Arc Path)", distance:"0.5 mi loop", surface:"asphalt", lapMiles:0.5, lat:40.5928, lon:-74.1746,
       desc:"A newly opened (2023) flat, paved loop through restored grassland and wetland with skyline and Main Creek views.",
       hours:"6am – 10pm (differs from standard park hours)", address:"350 Wild Ave, Staten Island, NY 10314",
@@ -1483,7 +1620,7 @@ const TRACKS = {
       police:"NYPD 121st Precinct — 970 Richmond Ave, ~2 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at Freshkills Park North Park.",
-      transit:"Not confirmed — local SIM/S buses serve the Richmond Ave/Travis area; exact nearest stop not confirmed.", hasFountain:false, hasRestroom:true },
+      transit:"Not confirmed — local SIM/S buses serve the Richmond Ave/Travis area; exact nearest stop not confirmed." },
     { name:"Great Kills Park Multi-Use Path", distance:"~1.5–2.1 mi one-way", surface:"asphalt", lapMiles:null, lat:40.5474, lon:-74.129,
       desc:"A flat, paved shoreline path along a barrier peninsula with continuous Lower Bay and Raritan Bay views, run by the National Park Service rather than NYC Parks.",
       hours:"6am – 9pm (differs from standard park hours)", address:"3270 Hylan Blvd, Staten Island, NY 10306",
@@ -1497,7 +1634,7 @@ const TRACKS = {
       police:"NYPD 122nd Precinct — 2320 Hylan Blvd, ~1.5 mi",
       petHours:"Standard NYC Parks leash rule applies (leashed 9am–9pm; off-leash 9pm–9am) — check for beach-specific seasonal dog restrictions.",
       dogParks:"No dedicated off-leash dog run confirmed at Great Kills Park.",
-      transit:"MTA bus S78 stops at Hylan Blvd/Great Kills Rd, right at the park entrance; Staten Island Railway's Great Kills station is ~0.5–0.7 mi away.", hasFountain:false, hasRestroom:true },
+      transit:"MTA bus S78 stops at Hylan Blvd/Great Kills Rd, right at the park entrance; Staten Island Railway's Great Kills station is ~0.5–0.7 mi away." },
     { name:"Wolfe's Pond Park Trail", distance:"~1.7 mi loop", surface:"trail", lapMiles:1.7, lat:40.5228, lon:-74.1974,
       desc:"An easy, mostly flat natural trail winding through woods and marsh around the pond down to the waterfront.",
       hours:"6am – 1am (park hours)", address:"420 Cornelia Ave, Staten Island, NY 10312",
@@ -1510,7 +1647,7 @@ const TRACKS = {
       police:"NYPD 123rd Precinct — 116 Main St, Tottenville, ~2 mi",
       petHours:"Leashed 9am–9pm; off-leash permitted 9pm–9am citywide (NYC Parks rule).",
       dogParks:"No dedicated off-leash dog run confirmed at Wolfe's Pond Park.",
-      transit:"MTA bus S78 runs along Hylan Boulevard past the park; exact nearest stop not confirmed.", hasFountain:false, hasRestroom:true }
+      transit:"MTA bus S78 runs along Hylan Boulevard past the park; exact nearest stop not confirmed." }
   ],
 };
 
@@ -1597,6 +1734,13 @@ en: {
   shoeExtraCold:"Cold enough to layer up — thin gloves and a light long sleeve.",
   shoeExtraHot:"Warm one — go for the most breathable mesh upper you own.",
   shoeExtraWindy:"Wind's up along the water — a light windbreaker on exposed stretches.",
+  sneakerIconAria:"Runner profiles and sneakers", profilesTitle:"Runner Profiles & Sneakers", profilesIntro:"Add yourself and your sneakers — we'll match the right pair to every track.",
+  activeProfileLabel:"Who's running?", noProfileOption:"No profile (general tips)", activeProfileTag:"Selected",
+  addProfileBtn:"+ Add person", newProfileNamePlaceholder:"Name", removeProfileAria:"Remove this profile",
+  emptyProfilesNote:"No profiles yet — add yourself to get picks matched to your own sneakers.", emptySneakersNote:"No sneakers added yet for {name}.",
+  sneakerNamePlaceholder:"Sneaker name (e.g. Nike Pegasus)", addSneakerBtn:"+ Add sneaker", removeSneakerAria:"Remove this sneaker",
+  yourPickLabel:"Your pick", noMatchNote:"{name} doesn't have a matching sneaker yet — here's the general pick:", toastEnterName:"Enter a name first.", toastSelectSurface:"Select at least one surface first.", toastDuplicateName:"That name's already in use — try adding a last initial to tell profiles apart.",
+  viewTrackDetailAria:"View {name} details",
   condTrackCautionIce:"Icy risk — the synthetic surface can glaze over near freezing.", condTrackFairWet:"Wet but drains well — still plenty grippy.", condTrackGood:"Dry and fast underfoot.",
   condAsphaltCautionIce:"Black-ice risk on wet pavement.", condAsphaltFairStanding:"Standing water likely in low spots.", condAsphaltFairWet:"Wet pavement — watch for painted lines and metal grates.", condAsphaltGood:"Dry, solid footing.",
   condBoardwalkCautionIce:"Wood decking can ice over — go slow.", condBoardwalkCautionWet:"Wet wood gets slick fast.", condBoardwalkGood:"Dry boards, good grip.",
@@ -1654,7 +1798,9 @@ es: {
   condTrailCautionIce:"Raíces y piedras heladas — alto riesgo de resbalar.", condTrailCautionMud:"Probablemente embarrado y erosionado tras lluvia fuerte.", condTrailFair:"Blando y resbaladizo en tramos — espera algo de barro.", condTrailGood:"Sendero seco y firme.",
   condGravelCautionIce:"La grava puede helarse en algunos puntos.", condGravelFairPuddle:"Es probable que haya charcos sobre la grava.", condGravelFairSoft:"Algo blando bajo los pies pero corrible.", condGravelGood:"Firme y seco.", condDefaultGood:"Las condiciones se ven bien.",
   lapsEqMile:"{n} vueltas = 1 milla", mileEqLap:"1 vuelta = {n} millas", lapsEqKm:"{n} vueltas = 1 km", kmEqLap:"1 vuelta = {n} km",
-},
+
+  toastHighUv:"El índice UV es {uv} ahora mismo — vale la pena usar protector solar y buscar sombra.", toastPoorAqi:"La calidad del aire es {aqi} AQI — considera una pista cubierta hoy si eres sensible a la calidad del aire.", toastHeat:"Hace {temp}°F — hidrátate bien y considera correr temprano o por la noche.", toastCold:"Hace {temp}°F — abrígate por capas y cuidado con el hielo.", transitLabel:"Transporte",
+  sneakerIconAria:"Perfiles de corredores y zapatillas", profilesTitle:"Perfiles de corredores y zapatillas", profilesIntro:"Agrégate a ti mismo y tus zapatillas — te sugeriremos el par correcto para cada pista.", activeProfileLabel:"¿Quién corre?", noProfileOption:"Sin perfil (consejos generales)", activeProfileTag:"Seleccionado", addProfileBtn:"+ Agregar persona", newProfileNamePlaceholder:"Nombre", removeProfileAria:"Eliminar este perfil", emptyProfilesNote:"Aún no hay perfiles — agrégate para recibir sugerencias según tus propias zapatillas.", emptySneakersNote:"Todavía no se han agregado zapatillas para {name}.", sneakerNamePlaceholder:"Nombre de la zapatilla (p. ej. Nike Pegasus)", addSneakerBtn:"+ Agregar zapatilla", removeSneakerAria:"Eliminar esta zapatilla", yourPickLabel:"Tu elección", noMatchNote:"{name} todavía no tiene una zapatilla adecuada — aquí está la recomendación general:", toastEnterName:"Primero escribe un nombre.", toastSelectSurface:"Selecciona al menos una superficie primero.", toastDuplicateName:"Ese nombre ya está en uso — prueba agregar una inicial para diferenciarlos.", viewTrackDetailAria:"Ver detalles de {name}",},
 'zh-Hans': {
   kicker:"五大区 · 实时状况", sub:"实时天气、空气质量、紫外线指数与三天预报——外加纽约市各公园所有知名跑道与环线，附今日路面状况与推荐跑鞋。",
   langLabel:"语言", nearMe:"附近", nearMeLocating:"定位中…",
@@ -1705,7 +1851,9 @@ es: {
   condTrailCautionIce:"树根与石头结冰 — 滑倒风险高。", condTrailCautionMud:"大雨后可能泥泞且路面被冲刷。", condTrailFair:"局部松软湿滑 — 预计会有泥地。", condTrailGood:"步道干燥坚实。",
   condGravelCautionIce:"碎石局部可能结冰。", condGravelFairPuddle:"碎石路面可能有积水。", condGravelFairSoft:"脚下略软但仍可跑。", condGravelGood:"坚实干燥。", condDefaultGood:"状况看起来不错。",
   lapsEqMile:"{n} 圈 = 1 英里", mileEqLap:"1 圈 = {n} 英里", lapsEqKm:"{n} 圈 = 1 公里", kmEqLap:"1 圈 = {n} 公里",
-},
+
+  toastHighUv:"现在紫外线指数为 {uv}——建议涂防晒霜并适当在阴凉处休息。", toastPoorAqi:"空气质量为 {aqi} AQI——如果你对空气质量敏感，今天可以考虑室内跑道。", toastHeat:"现在气温 {temp}°F——请多补水，考虑清晨或傍晚跑步。", toastCold:"现在气温 {temp}°F——请注意保暖分层，留意路面结冰。", transitLabel:"交通",
+  sneakerIconAria:"跑者资料与跑鞋", profilesTitle:"跑者资料与跑鞋", profilesIntro:"添加你自己和你的跑鞋——我们会为每条跑道匹配合适的一双。", activeProfileLabel:"谁在跑步？", noProfileOption:"无资料（通用建议）", activeProfileTag:"已选择", addProfileBtn:"+ 添加成员", newProfileNamePlaceholder:"姓名", removeProfileAria:"删除此资料", emptyProfilesNote:"还没有添加资料——添加你自己，即可获得根据你的跑鞋匹配的建议。", emptySneakersNote:"{name} 还没有添加跑鞋。", sneakerNamePlaceholder:"跑鞋名称（例如 Nike Pegasus）", addSneakerBtn:"+ 添加跑鞋", removeSneakerAria:"删除此跑鞋", yourPickLabel:"为你推荐", noMatchNote:"{name} 还没有合适的跑鞋——以下是通用建议：", toastEnterName:"请先输入姓名。", toastSelectSurface:"请先选择至少一种路面类型。", toastDuplicateName:"该姓名已被使用——试着加上姓氏首字母以区分资料。", viewTrackDetailAria:"查看{name}详情",},
 'zh-Hant': {
   kicker:"五大區 · 即時狀況", sub:"即時天氣、空氣品質、紫外線指數與三天預報——外加紐約市各公園所有知名跑道與環線，附今日路面狀況與推薦跑鞋。",
   langLabel:"語言", nearMe:"附近", nearMeLocating:"定位中…",
@@ -1756,7 +1904,9 @@ es: {
   condTrailCautionIce:"樹根與石頭結冰 — 滑倒風險高。", condTrailCautionMud:"大雨後可能泥濘且路面被沖刷。", condTrailFair:"局部濕軟濕滑 — 預計會有泥地。", condTrailGood:"步道乾燥堅實。",
   condGravelCautionIce:"碎石局部可能結冰。", condGravelFairPuddle:"碎石路面可能積水。", condGravelFairSoft:"腳下略軟但仍可跑。", condGravelGood:"堅實乾燥。", condDefaultGood:"狀況看起來不錯。",
   lapsEqMile:"{n} 圈 = 1 英里", mileEqLap:"1 圈 = {n} 英里", lapsEqKm:"{n} 圈 = 1 公里", kmEqLap:"1 圈 = {n} 公里",
-},
+
+  toastHighUv:"目前紫外線指數為 {uv}——建議塗防曬乳並適時在陰涼處休息。", toastPoorAqi:"空氣品質為 {aqi} AQI——若你對空氣品質敏感，今天可考慮室內跑道。", toastHeat:"目前氣溫 {temp}°F——請充分補水，並考慮清晨或傍晚跑步。", toastCold:"目前氣溫 {temp}°F——請注意保暖分層，留意路面結冰。", transitLabel:"交通",
+  sneakerIconAria:"跑者資料與跑鞋", profilesTitle:"跑者資料與跑鞋", profilesIntro:"新增你自己和你的跑鞋——我們會為每條跑道配對合適的一雙。", activeProfileLabel:"誰在跑步？", noProfileOption:"無資料（通用建議）", activeProfileTag:"已選擇", addProfileBtn:"+ 新增成員", newProfileNamePlaceholder:"姓名", removeProfileAria:"移除此資料", emptyProfilesNote:"尚未新增資料——新增你自己，即可獲得根據你的跑鞋配對的建議。", emptySneakersNote:"{name} 尚未新增跑鞋。", sneakerNamePlaceholder:"跑鞋名稱（例如 Nike Pegasus）", addSneakerBtn:"+ 新增跑鞋", removeSneakerAria:"移除此跑鞋", yourPickLabel:"為你推薦", noMatchNote:"{name} 尚未有合適的跑鞋——以下是通用建議：", toastEnterName:"請先輸入姓名。", toastSelectSurface:"請先選擇至少一種路面類型。", toastDuplicateName:"該姓名已被使用——試著加上姓氏首字母以區分資料。", viewTrackDetailAria:"查看{name}詳情",},
 ru: {
   kicker:"Пять районов · текущие условия", sub:"Погода в реальном времени, качество воздуха, УФ-индекс и прогноз на 3 дня — плюс все заметные беговые дорожки и круги в парках Нью-Йорка с состоянием покрытия и подбором кроссовок на сегодня.",
   langLabel:"Язык", nearMe:"Рядом со мной", nearMeLocating:"Определение местоположения…",
@@ -1807,7 +1957,9 @@ ru: {
   condTrailCautionIce:"Обледенелые корни и камни — высокий риск поскользнуться.", condTrailCautionMud:"После сильного дождя вероятна грязь и размытие.", condTrailFair:"Местами мягко и скользко — ожидайте грязь.", condTrailGood:"Тропа сухая и плотная.",
   condGravelCautionIce:"Местами гравий может обледенеть.", condGravelFairPuddle:"На гравии вероятны лужи.", condGravelFairSoft:"Немного мягко под ногами, но бежать можно.", condGravelGood:"Плотно и сухо.", condDefaultGood:"Условия выглядят нормально.",
   lapsEqMile:"{n} круга(ов) = 1 миля", mileEqLap:"1 круг = {n} миль", lapsEqKm:"{n} круга(ов) = 1 км", kmEqLap:"1 круг = {n} км",
-},
+
+  toastHighUv:"Сейчас УФ-индекс {uv} — стоит нанести солнцезащитный крем и делать перерывы в тени.", toastPoorAqi:"Качество воздуха: {aqi} AQI — если вы чувствительны к качеству воздуха, сегодня лучше выбрать крытую дорожку.", toastHeat:"Сейчас {temp}°F — пейте больше воды и подумайте о пробежке рано утром или вечером.", toastCold:"Сейчас {temp}°F — оденьтесь слоями и берегитесь наледи.", transitLabel:"Транспорт",
+  sneakerIconAria:"Профили бегунов и кроссовки", profilesTitle:"Профили бегунов и кроссовки", profilesIntro:"Добавьте себя и свои кроссовки — мы подберём подходящую пару для каждой дорожки.", activeProfileLabel:"Кто бежит?", noProfileOption:"Без профиля (общие советы)", activeProfileTag:"Выбрано", addProfileBtn:"+ Добавить человека", newProfileNamePlaceholder:"Имя", removeProfileAria:"Удалить этот профиль", emptyProfilesNote:"Профилей пока нет — добавьте себя, чтобы получать советы по своим кроссовкам.", emptySneakersNote:"У {name} пока нет добавленных кроссовок.", sneakerNamePlaceholder:"Название кроссовок (напр. Nike Pegasus)", addSneakerBtn:"+ Добавить кроссовки", removeSneakerAria:"Удалить эти кроссовки", yourPickLabel:"Ваш выбор", noMatchNote:"У {name} пока нет подходящих кроссовок — вот общая рекомендация:", toastEnterName:"Сначала введите имя.", toastSelectSurface:"Сначала выберите хотя бы одно покрытие.", toastDuplicateName:"Это имя уже используется — добавьте, например, первую букву фамилии, чтобы отличить профили.", viewTrackDetailAria:"Посмотреть детали: {name}",},
 ko: {
   kicker:"5개 자치구 · 실시간 상황", sub:"실시간 날씨, 대기질, 자외선 지수와 3일 예보 — 그리고 뉴욕시 공원의 주요 러닝 트랙과 루프를 오늘의 노면 상태와 추천 러닝화와 함께 확인하세요.",
   langLabel:"언어", nearMe:"내 주변", nearMeLocating:"위치 확인 중…",
@@ -1858,7 +2010,9 @@ ko: {
   condTrailCautionIce:"뿌리와 바위가 얼어 미끄러질 위험이 높습니다.", condTrailCautionMud:"폭우 뒤라 진흙과 유실이 예상됩니다.", condTrailFair:"군데군데 질퍽하고 미끄럽습니다 — 진흙을 예상하세요.", condTrailGood:"트레일이 건조하고 단단합니다.",
   condGravelCautionIce:"쇄석 일부가 얼 수 있습니다.", condGravelFairPuddle:"쇄석 노면에 물웅덩이가 생길 수 있습니다.", condGravelFairSoft:"발밑이 약간 푹신하지만 달릴 수 있습니다.", condGravelGood:"단단하고 건조합니다.", condDefaultGood:"상황이 양호해 보입니다.",
   lapsEqMile:"{n}랩 = 1마일", mileEqLap:"1랩 = {n}마일", lapsEqKm:"{n}랩 = 1km", kmEqLap:"1랩 = {n}km",
-},
+
+  toastHighUv:"현재 자외선 지수는 {uv}입니다 — 선크림을 바르고 그늘에서 휴식을 취하는 것이 좋습니다.", toastPoorAqi:"대기질은 {aqi} AQI입니다 — 대기질에 민감하다면 오늘은 실내 트랙을 고려해보세요.", toastHeat:"현재 기온은 {temp}°F입니다 — 수분을 충분히 섭취하고 이른 아침이나 저녁 러닝을 고려해보세요.", toastCold:"현재 기온은 {temp}°F입니다 — 옷을 여러 겹 입고 빙판길을 조심하세요.", transitLabel:"대중교통",
+  sneakerIconAria:"러너 프로필 및 운동화", profilesTitle:"러너 프로필 및 운동화", profilesIntro:"본인과 운동화를 추가하세요 — 각 트랙에 맞는 운동화를 추천해드립니다.", activeProfileLabel:"누가 달리나요?", noProfileOption:"프로필 없음 (일반 팁)", activeProfileTag:"선택됨", addProfileBtn:"+ 사람 추가", newProfileNamePlaceholder:"이름", removeProfileAria:"이 프로필 삭제", emptyProfilesNote:"아직 프로필이 없습니다 — 본인을 추가하면 보유한 운동화에 맞는 추천을 받을 수 있습니다.", emptySneakersNote:"{name}님의 운동화가 아직 추가되지 않았습니다.", sneakerNamePlaceholder:"운동화 이름 (예: Nike Pegasus)", addSneakerBtn:"+ 운동화 추가", removeSneakerAria:"이 운동화 삭제", yourPickLabel:"추천 운동화", noMatchNote:"{name}님은 아직 맞는 운동화가 없습니다 — 일반 추천은 다음과 같습니다:", toastEnterName:"먼저 이름을 입력하세요.", toastSelectSurface:"먼저 노면 유형을 하나 이상 선택하세요.", toastDuplicateName:"이미 사용 중인 이름입니다 — 성의 이니셜을 추가해 구분해보세요.", viewTrackDetailAria:"{name} 상세 정보 보기",},
 fr: {
   kicker:"Cinq arrondissements · conditions en direct", sub:"Météo en temps réel, qualité de l'air, indice UV et prévisions sur 3 jours — plus toutes les pistes et boucles de course notables des parcs de New York, avec l'état du sol du jour et les chaussures adaptées.",
   langLabel:"Langue", nearMe:"Près de moi", nearMeLocating:"Localisation…",
@@ -1909,7 +2063,9 @@ fr: {
   condTrailCautionIce:"Racines et rochers gelés — fort risque de glissade.", condTrailCautionMud:"Probablement boueux et érodé après de fortes pluies.", condTrailFair:"Meuble et glissant par endroits — attendez-vous à de la boue.", condTrailGood:"Sentier sec et ferme.",
   condGravelCautionIce:"La pierre concassée peut geler par endroits.", condGravelFairPuddle:"Flaques probables sur le gravier.", condGravelFairSoft:"Un peu meuble sous les pieds mais praticable.", condGravelGood:"Ferme et sec.", condDefaultGood:"Les conditions semblent correctes.",
   lapsEqMile:"{n} tours = 1 mile", mileEqLap:"1 tour = {n} miles", lapsEqKm:"{n} tours = 1 km", kmEqLap:"1 tour = {n} km",
-},
+
+  toastHighUv:"L'indice UV est actuellement de {uv} — crème solaire et pauses à l'ombre recommandées.", toastPoorAqi:"La qualité de l'air est de {aqi} AQI — envisagez une piste couverte aujourd'hui si vous y êtes sensible.", toastHeat:"Il fait {temp}°F — hydratez-vous bien et pensez à courir tôt le matin ou en soirée.", toastCold:"Il fait {temp}°F — habillez-vous en couches et attention au verglas.", transitLabel:"Transports",
+  sneakerIconAria:"Profils des coureurs et baskets", profilesTitle:"Profils des coureurs et baskets", profilesIntro:"Ajoutez-vous et vos baskets — nous vous suggérerons la bonne paire pour chaque piste.", activeProfileLabel:"Qui court ?", noProfileOption:"Aucun profil (conseils généraux)", activeProfileTag:"Sélectionné", addProfileBtn:"+ Ajouter une personne", newProfileNamePlaceholder:"Nom", removeProfileAria:"Supprimer ce profil", emptyProfilesNote:"Aucun profil pour l'instant — ajoutez-vous pour obtenir des suggestions basées sur vos propres baskets.", emptySneakersNote:"Aucune basket ajoutée pour {name}.", sneakerNamePlaceholder:"Nom de la basket (ex. Nike Pegasus)", addSneakerBtn:"+ Ajouter une basket", removeSneakerAria:"Supprimer cette basket", yourPickLabel:"Notre choix pour vous", noMatchNote:"{name} n'a pas encore de basket adaptée — voici la recommandation générale :", toastEnterName:"Entrez d'abord un nom.", toastSelectSurface:"Sélectionnez d'abord au moins un type de surface.", toastDuplicateName:"Ce nom est déjà utilisé — ajoutez par exemple une initiale pour les distinguer.", viewTrackDetailAria:"Voir les détails de {name}",},
 it: {
   kicker:"Cinque distretti · condizioni in tempo reale", sub:"Meteo in tempo reale, qualità dell'aria, indice UV e previsioni a 3 giorni — più tutte le piste e gli anelli podistici più noti dei parchi di New York, con lo stato del fondo di oggi e le scarpe più adatte.",
   langLabel:"Lingua", nearMe:"Vicino a me", nearMeLocating:"Localizzazione…",
@@ -1960,7 +2116,9 @@ it: {
   condTrailCautionIce:"Radici e rocce ghiacciate — alto rischio di scivolare.", condTrailCautionMud:"Probabile fango ed erosione dopo piogge intense.", condTrailFair:"Morbido e scivoloso a tratti — aspettati un po' di fango.", condTrailGood:"Sentiero asciutto e compatto.",
   condGravelCautionIce:"Il pietrisco può ghiacciare in alcuni punti.", condGravelFairPuddle:"Probabili pozzanghere sul pietrisco.", condGravelFairSoft:"Leggermente morbido sotto i piedi ma corribile.", condGravelGood:"Compatto e asciutto.", condDefaultGood:"Le condizioni sembrano buone.",
   lapsEqMile:"{n} giri = 1 miglio", mileEqLap:"1 giro = {n} miglia", lapsEqKm:"{n} giri = 1 km", kmEqLap:"1 giro = {n} km",
-},
+
+  toastHighUv:"L'indice UV è attualmente {uv} — vale la pena usare la crema solare e fare pause all'ombra.", toastPoorAqi:"La qualità dell'aria è {aqi} AQI — se sei sensibile, oggi meglio una pista al coperto.", toastHeat:"Ci sono {temp}°F — idratati bene e valuta una corsa al mattino presto o alla sera.", toastCold:"Ci sono {temp}°F — vestiti a strati e fai attenzione al ghiaccio.", transitLabel:"Trasporti",
+  sneakerIconAria:"Profili dei runner e scarpe", profilesTitle:"Profili dei runner e scarpe", profilesIntro:"Aggiungi te stesso e le tue scarpe — suggeriremo il paio giusto per ogni pista.", activeProfileLabel:"Chi corre?", noProfileOption:"Nessun profilo (consigli generali)", activeProfileTag:"Selezionato", addProfileBtn:"+ Aggiungi persona", newProfileNamePlaceholder:"Nome", removeProfileAria:"Rimuovi questo profilo", emptyProfilesNote:"Nessun profilo ancora — aggiungiti per ricevere consigli in base alle tue scarpe.", emptySneakersNote:"Nessuna scarpa ancora aggiunta per {name}.", sneakerNamePlaceholder:"Nome della scarpa (es. Nike Pegasus)", addSneakerBtn:"+ Aggiungi scarpa", removeSneakerAria:"Rimuovi questa scarpa", yourPickLabel:"Consiglio per te", noMatchNote:"{name} non ha ancora una scarpa adatta — ecco il consiglio generale:", toastEnterName:"Inserisci prima un nome.", toastSelectSurface:"Seleziona prima almeno un tipo di superficie.", toastDuplicateName:"Questo nome è già in uso — prova ad aggiungere un'iniziale per distinguerli.", viewTrackDetailAria:"Vedi dettagli di {name}",},
 ar: {
   kicker:"خمس مقاطعات · أحوال مباشرة", sub:"طقس مباشر، جودة الهواء، مؤشر الأشعة فوق البنفسجية، وتوقعات ثلاثة أيام — إضافة إلى كل مضمار وحلقة جري بارزة في حدائق نيويورك، مع حالة السطح اليوم والحذاء المناسب.",
   langLabel:"اللغة", nearMe:"بالقرب مني", nearMeLocating:"جارٍ تحديد الموقع…",
@@ -2011,7 +2169,9 @@ ar: {
   condTrailCautionIce:"جذور وصخور متجمدة — خطر انزلاق مرتفع.", condTrailCautionMud:"يُحتمل وجود طين وتآكل بعد مطر غزير.", condTrailFair:"طري وزلق في بعض الأماكن — توقّع بعض الطين.", condTrailGood:"ممر جاف وصلب.",
   condGravelCautionIce:"قد يتجمد الحصى في بعض النقاط.", condGravelFairPuddle:"يُحتمل تجمّع برك ماء على سطح الحصى.", condGravelFairSoft:"طري قليلًا تحت القدمين لكنه صالح للجري.", condGravelGood:"صلب وجاف.", condDefaultGood:"الأحوال تبدو جيدة.",
   lapsEqMile:"{n} لفة = 1 ميل", mileEqLap:"لفة واحدة = {n} ميل", lapsEqKm:"{n} لفة = 1 كم", kmEqLap:"لفة واحدة = {n} كم",
-},
+
+  toastHighUv:"مؤشر الأشعة فوق البنفسجية الآن {uv} — يُستحسن استخدام واقي الشمس وأخذ فترات راحة في الظل.", toastPoorAqi:"جودة الهواء الآن {aqi} AQI — إذا كنت حساسًا لجودة الهواء، ففكر في مضمار داخلي اليوم.", toastHeat:"درجة الحرارة الآن {temp}°F — اشرب الماء بكثرة وفكر في الجري في الصباح الباكر أو المساء.", toastCold:"درجة الحرارة الآن {temp}°F — البس طبقات متعددة واحذر من البقع الجليدية.", transitLabel:"المواصلات",
+  sneakerIconAria:"ملفات العدّائين والأحذية", profilesTitle:"ملفات العدّائين والأحذية", profilesIntro:"أضف نفسك وأحذيتك — سنقترح الحذاء المناسب لكل مضمار.", activeProfileLabel:"من الذي يجري؟", noProfileOption:"بدون ملف شخصي (نصائح عامة)", activeProfileTag:"محدَّد", addProfileBtn:"+ إضافة شخص", newProfileNamePlaceholder:"الاسم", removeProfileAria:"إزالة هذا الملف الشخصي", emptyProfilesNote:"لا توجد ملفات شخصية بعد — أضف نفسك للحصول على اقتراحات مطابقة لأحذيتك.", emptySneakersNote:"لم تتم إضافة أي أحذية لـ {name} بعد.", sneakerNamePlaceholder:"اسم الحذاء (مثال: Nike Pegasus)", addSneakerBtn:"+ إضافة حذاء", removeSneakerAria:"إزالة هذا الحذاء", yourPickLabel:"الاختيار المناسب لك", noMatchNote:"لا يمتلك {name} حذاءً مناسبًا بعد — إليك الاقتراح العام:", toastEnterName:"أدخل الاسم أولاً.", toastSelectSurface:"اختر نوع سطح واحدًا على الأقل أولاً.", toastDuplicateName:"هذا الاسم مستخدم بالفعل — جرّب إضافة الحرف الأول من اسم العائلة للتمييز بين الملفات.", viewTrackDetailAria:"عرض تفاصيل {name}",},
 pt: {
   kicker:"Cinco distritos · condições em tempo real", sub:"Clima em tempo real, qualidade do ar, índice UV e previsão de 3 dias — além de todas as pistas e circuitos de corrida notáveis nos parques de Nova Iorque, com o estado do piso de hoje e o calçado ideal.",
   langLabel:"Idioma", nearMe:"Perto de mim", nearMeLocating:"A localizar…",
@@ -2062,7 +2222,9 @@ pt: {
   condTrailCautionIce:"Raízes e pedras geladas — risco elevado de escorregar.", condTrailCautionMud:"Provavelmente lamacento e erodido após chuva forte.", condTrailFair:"Macio e escorregadio em alguns pontos — espera alguma lama.", condTrailGood:"Trilho seco e firme.",
   condGravelCautionIce:"A gravilha pode gelar em alguns pontos.", condGravelFairPuddle:"Provável acumulação de poças na gravilha.", condGravelFairSoft:"Ligeiramente macio debaixo dos pés mas dá para correr.", condGravelGood:"Firme e seco.", condDefaultGood:"As condições parecem boas.",
   lapsEqMile:"{n} voltas = 1 milha", mileEqLap:"1 volta = {n} milhas", lapsEqKm:"{n} voltas = 1 km", kmEqLap:"1 volta = {n} km",
-},
+
+  toastHighUv:"O índice UV está agora em {uv} — vale a pena usar protetor solar e fazer pausas à sombra.", toastPoorAqi:"A qualidade do ar está em {aqi} AQI — considera uma pista coberta hoje se és sensível à qualidade do ar.", toastHeat:"Estão {temp}°F — hidrata-te bem e considera correr de manhã cedo ou ao fim do dia.", toastCold:"Estão {temp}°F — veste-te em camadas e tem cuidado com o gelo.", transitLabel:"Transportes",
+  sneakerIconAria:"Perfis de corredores e ténis", profilesTitle:"Perfis de corredores e ténis", profilesIntro:"Adiciona-te a ti e aos teus ténis — vamos sugerir o par certo para cada pista.", activeProfileLabel:"Quem está a correr?", noProfileOption:"Sem perfil (dicas gerais)", activeProfileTag:"Selecionado", addProfileBtn:"+ Adicionar pessoa", newProfileNamePlaceholder:"Nome", removeProfileAria:"Remover este perfil", emptyProfilesNote:"Ainda não há perfis — adiciona-te para receberes sugestões baseadas nos teus próprios ténis.", emptySneakersNote:"Ainda não foram adicionados ténis para {name}.", sneakerNamePlaceholder:"Nome dos ténis (ex.: Nike Pegasus)", addSneakerBtn:"+ Adicionar ténis", removeSneakerAria:"Remover estes ténis", yourPickLabel:"A tua escolha", noMatchNote:"{name} ainda não tem ténis adequados — aqui está a sugestão geral:", toastEnterName:"Introduz um nome primeiro.", toastSelectSurface:"Seleciona pelo menos um tipo de piso primeiro.", toastDuplicateName:"Esse nome já está em uso — tenta adicionar uma inicial para diferenciar os perfis.", viewTrackDetailAria:"Ver detalhes de {name}",},
 };
 
 function t(key, vars){
@@ -2121,6 +2283,34 @@ function saveFavs(set){
 }
 let favorites = loadFavs();
 function favKey(boroughId, name){ return boroughId + '::' + name; }
+
+/* ================= RUNNER PROFILES & SNEAKERS ================= */
+const PROFILES_KEY = 'soul2soleProfiles';
+let profiles = [];
+let activeProfileId = null;
+function loadProfiles(){
+  try{
+    const raw = storageGet(PROFILES_KEY);
+    if(raw){
+      const data = JSON.parse(raw);
+      profiles = Array.isArray(data.profiles) ? data.profiles : [];
+      activeProfileId = data.activeProfileId || null;
+    }
+  }catch(e){ profiles = []; activeProfileId = null; }
+}
+function saveProfiles(){
+  try{ storageSet(PROFILES_KEY, JSON.stringify({ profiles, activeProfileId })); }catch(e){}
+}
+loadProfiles();
+function newId(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,10); }
+function getActiveProfile(){ return profiles.find(p=>p.id===activeProfileId) || null; }
+function matchingSneakers(profile, surface){
+  if(!profile) return [];
+  return profile.sneakers.filter(s => s.surfaces.includes(surface));
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
 
 
 /* ================= UNIT HELPERS ================= */
@@ -2470,6 +2660,273 @@ document.addEventListener('keydown', (e)=>{
   }
 });
 
+/* Shared amenity-icon row: used on every track card AND inside the track detail modal. */
+function locIconRowHtml(){
+  return `
+    <button type="button" class="loc-btn" data-loc="parking" aria-label="${t('parkingLabel')}"><span class="loc-emoji" aria-hidden="true">🅿️</span><span>${t('parkingLabel')}</span></button>
+    <button type="button" class="loc-btn" data-loc="restrooms" aria-label="${t('restroomsLabel')}"><span class="loc-emoji" aria-hidden="true">🚻</span><span>${t('restroomsLabel')}</span></button>
+    <button type="button" class="loc-btn" data-loc="fountains" aria-label="${t('fountainsLabel')}"><span class="loc-emoji" aria-hidden="true">🚰</span><span>${t('fountainsLabel')}</span></button>
+    <button type="button" class="loc-btn safety" data-loc="hospital" aria-label="${t('hospitalLabel')}"><span class="loc-emoji" aria-hidden="true">🏥</span><span>${t('hospitalLabel')}</span></button>
+    <button type="button" class="loc-btn safety" data-loc="police" aria-label="${t('policeLabel')}"><span class="loc-emoji" aria-hidden="true">🚓</span><span>${t('policeLabel')}</span></button>
+    <button type="button" class="loc-btn" data-loc="transit" aria-label="${t('transitLabel')}"><span class="loc-emoji" aria-hidden="true">🚇</span><span>${t('transitLabel')}</span></button>
+  `;
+}
+function openLocForKind(kind, trk, mapsUrl){
+  if(kind === 'parking'){
+    openLocInfo({
+      emoji:'🅿️', title:t('parkingLabel'), trackName: trk.name,
+      rows:[
+        {label:t('parkingLabel'), value: trField(trk,'parking')},
+        {label:t('adaParkingLabel'), value: trField(trk,'accessibleParking')}
+      ],
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+    });
+  } else if(kind === 'restrooms'){
+    openLocInfo({
+      emoji:'🚻', title:t('restroomsLabel'), trackName: trk.name,
+      rows:[{label:t('restroomsLabel'), value: trField(trk,'restrooms')}],
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+    });
+  } else if(kind === 'fountains'){
+    openLocInfo({
+      emoji:'🚰', title:t('fountainsLabel'), trackName: trk.name,
+      rows:[{label:t('fountainsLabel'), value: trField(trk,'fountains')}],
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+    });
+  } else if(kind === 'hospital'){
+    openLocInfo({
+      emoji:'🏥', title:t('hospitalLabel'), trackName: trk.name,
+      rows:[{label:t('hospitalLabel'), value: trk.hospital}],
+      directionsUrl: placeMapsUrl(trk.hospital), directionsLabel: t('directionsBtn')
+    });
+  } else if(kind === 'police'){
+    openLocInfo({
+      emoji:'🚓', title:t('policeLabel'), trackName: trk.name,
+      rows:[{label:t('policeLabel'), value: trk.police}],
+      directionsUrl: placeMapsUrl(trk.police), directionsLabel: t('directionsBtn')
+    });
+  } else if(kind === 'transit'){
+    openLocInfo({
+      emoji:'🚇', title:t('transitLabel'), trackName: trk.name,
+      rows:[{label:t('transitLabel'), value: trk.transit}],
+      directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
+    });
+  }
+}
+function bindLocButtons(container, trk, mapsUrl){
+  container.querySelectorAll('.loc-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> openLocForKind(btn.dataset.loc, trk, mapsUrl));
+  });
+}
+
+/* ================= TRACK DETAIL MODAL (overhead aerial diagram) ================= */
+const trackDetailOverlay = document.getElementById('trackDetailOverlay');
+const trackDetailCloseBtn = document.getElementById('trackDetailCloseBtn');
+const trackDetailTitleText = document.getElementById('trackDetailTitleText');
+const trackDetailMapFrame = document.getElementById('trackDetailMapFrame');
+
+function mapZoomFor(trk){
+  if(trk.lapMiles == null) return 14;
+  if(trk.lapMiles <= 0.5) return 17;
+  if(trk.lapMiles <= 1.5) return 16;
+  if(trk.lapMiles <= 4) return 14;
+  return 12;
+}
+
+let trackDetailLastFocused = null;
+function openTrackDetail(trk){
+  trackDetailLastFocused = document.activeElement;
+  trackDetailTitleText.textContent = trk.name;
+  // t=k = pure satellite imagery (no roads/labels overlay) for a clean overhead
+  // aerial look at the track's real location.
+  trackDetailMapFrame.src = trk.lat != null && trk.lon != null
+    ? `https://www.google.com/maps?q=${trk.lat},${trk.lon}&z=${mapZoomFor(trk)}&t=k&output=embed`
+    : '';
+  trackDetailOverlay.hidden = false;
+  trackDetailCloseBtn.focus();
+}
+function closeTrackDetail(){
+  trackDetailOverlay.hidden = true;
+  trackDetailMapFrame.src = '';
+  if(trackDetailLastFocused && typeof trackDetailLastFocused.focus === 'function') trackDetailLastFocused.focus();
+}
+trackDetailCloseBtn.addEventListener('click', closeTrackDetail);
+trackDetailOverlay.addEventListener('click', (e)=>{ if(e.target === trackDetailOverlay) closeTrackDetail(); });
+document.addEventListener('keydown', (e)=>{
+  if(trackDetailOverlay.hidden) return;
+  if(e.key === 'Escape'){ closeTrackDetail(); return; }
+  if(e.key === 'Tab'){
+    const focusable = [...trackDetailOverlay.querySelectorAll('button, a[href]')].filter(el => !el.hidden && el.offsetParent !== null);
+    if(!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if(e.shiftKey && document.activeElement === first){
+      e.preventDefault(); last.focus();
+    } else if(!e.shiftKey && document.activeElement === last){
+      e.preventDefault(); first.focus();
+    }
+  }
+});
+
+/* ================= RUNNER PROFILES MODAL ================= */
+const profilesOverlay = document.getElementById('profilesOverlay');
+const profilesCloseBtn = document.getElementById('profilesCloseBtn');
+const sneakerBtn = document.getElementById('sneakerBtn');
+const activeProfileSelect = document.getElementById('activeProfileSelect');
+const profileListEl = document.getElementById('profileList');
+const newProfileNameInput = document.getElementById('newProfileNameInput');
+const addProfileBtn = document.getElementById('addProfileBtn');
+
+const SNEAKER_SURFACE_ORDER = ['track','asphalt','trail','boardwalk','gravel'];
+const SNEAKER_SURFACE_LABEL_KEY = {
+  track:'filterTrack', asphalt:'filterAsphalt', trail:'filterTrail', boardwalk:'filterBoardwalk', gravel:'filterGravel'
+};
+
+function renderProfileCard(p){
+  const isActive = p.id === activeProfileId;
+  const sneakerRows = p.sneakers.length
+    ? p.sneakers.map(s => `
+      <div class="sneaker-row">
+        <div class="sneaker-info">
+          <span class="sneaker-name">${escapeHtml(s.name)}</span>
+          <span class="sneaker-surfaces">${s.surfaces.map(surf => t(SNEAKER_SURFACE_LABEL_KEY[surf])).join(', ') || '—'}</span>
+        </div>
+        <button type="button" class="sneaker-delete-btn" data-profile-id="${p.id}" data-sneaker-id="${s.id}" aria-label="${t('removeSneakerAria')}">✕</button>
+      </div>`).join('')
+    : `<p class="empty-note small">${t('emptySneakersNote', {name: escapeHtml(p.name)})}</p>`;
+
+  return `
+    <div class="profile-card${isActive ? ' is-active' : ''}" data-profile-id="${p.id}">
+      <div class="profile-card-head">
+        <span><strong>${escapeHtml(p.name)}</strong>${isActive ? `<span class="profile-active-tag">${t('activeProfileTag')}</span>` : ''}</span>
+        <button type="button" class="profile-delete-btn" data-profile-id="${p.id}" aria-label="${t('removeProfileAria')}">✕</button>
+      </div>
+      <div class="sneaker-list">${sneakerRows}</div>
+      <div class="add-sneaker-form">
+        <input type="text" class="sneaker-name-input" placeholder="${t('sneakerNamePlaceholder')}" maxlength="40">
+        <div class="surface-check-row">
+          ${SNEAKER_SURFACE_ORDER.map(s => `<label><input type="checkbox" value="${s}"> ${t(SNEAKER_SURFACE_LABEL_KEY[s])}</label>`).join('')}
+        </div>
+        <button type="button" class="add-sneaker-btn" data-profile-id="${p.id}">${t('addSneakerBtn')}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderProfilesModal(){
+  document.getElementById('profilesTitleText').textContent = t('profilesTitle');
+  document.getElementById('profilesIntroText').textContent = t('profilesIntro');
+  document.getElementById('txtActiveProfileLabel').textContent = t('activeProfileLabel');
+  addProfileBtn.textContent = t('addProfileBtn');
+  newProfileNameInput.placeholder = t('newProfileNamePlaceholder');
+  sneakerBtn.setAttribute('aria-label', t('sneakerIconAria'));
+
+  activeProfileSelect.innerHTML = '';
+  const noneOpt = document.createElement('option');
+  noneOpt.value = '';
+  noneOpt.textContent = t('noProfileOption');
+  activeProfileSelect.appendChild(noneOpt);
+  profiles.forEach(p=>{
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    activeProfileSelect.appendChild(opt);
+  });
+  activeProfileSelect.value = activeProfileId || '';
+
+  profileListEl.innerHTML = profiles.length
+    ? profiles.map(renderProfileCard).join('')
+    : `<p class="empty-note small">${t('emptyProfilesNote')}</p>`;
+}
+
+activeProfileSelect.addEventListener('change', ()=>{
+  activeProfileId = activeProfileSelect.value || null;
+  saveProfiles();
+  renderProfilesModal();
+  applyShoeRecs();
+});
+
+addProfileBtn.addEventListener('click', ()=>{
+  const name = newProfileNameInput.value.trim();
+  if(!name){ showToast(t('toastEnterName'), '👟'); newProfileNameInput.focus(); return; }
+  if(profiles.some(p=>p.name.trim().toLowerCase()===name.toLowerCase())){ showToast(t('toastDuplicateName'), '👟'); newProfileNameInput.focus(); return; }
+  const p = { id:newId('p'), name, sneakers:[] };
+  profiles.push(p);
+  if(!activeProfileId) activeProfileId = p.id;
+  newProfileNameInput.value = '';
+  saveProfiles();
+  renderProfilesModal();
+  applyShoeRecs();
+});
+newProfileNameInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); addProfileBtn.click(); } });
+
+profileListEl.addEventListener('click', (e)=>{
+  const delProfileBtn = e.target.closest('.profile-delete-btn');
+  if(delProfileBtn){
+    const pid = delProfileBtn.dataset.profileId;
+    profiles = profiles.filter(p=>p.id!==pid);
+    if(activeProfileId === pid) activeProfileId = null;
+    saveProfiles();
+    renderProfilesModal();
+    applyShoeRecs();
+    return;
+  }
+  const delSneakerBtn = e.target.closest('.sneaker-delete-btn');
+  if(delSneakerBtn){
+    const pid = delSneakerBtn.dataset.profileId, sid = delSneakerBtn.dataset.sneakerId;
+    const profile = profiles.find(p=>p.id===pid);
+    if(profile) profile.sneakers = profile.sneakers.filter(s=>s.id!==sid);
+    saveProfiles();
+    renderProfilesModal();
+    applyShoeRecs();
+    return;
+  }
+  const addBtn = e.target.closest('.add-sneaker-btn');
+  if(addBtn){
+    const pid = addBtn.dataset.profileId;
+    const profile = profiles.find(p=>p.id===pid);
+    if(!profile) return;
+    const card = addBtn.closest('.profile-card');
+    const nameInput = card.querySelector('.sneaker-name-input');
+    const name = nameInput.value.trim();
+    if(!name){ showToast(t('toastEnterName'), '👟'); nameInput.focus(); return; }
+    const surfaces = [...card.querySelectorAll('.surface-check-row input:checked')].map(cb=>cb.value);
+    if(!surfaces.length){ showToast(t('toastSelectSurface'), '👟'); return; }
+    profile.sneakers.push({ id:newId('s'), name, surfaces });
+    saveProfiles();
+    renderProfilesModal();
+    applyShoeRecs();
+  }
+});
+
+let profilesLastFocused = null;
+function openProfilesModal(){
+  profilesLastFocused = document.activeElement;
+  renderProfilesModal();
+  profilesOverlay.hidden = false;
+  profilesCloseBtn.focus();
+}
+function closeProfilesModal(){
+  profilesOverlay.hidden = true;
+  if(profilesLastFocused && typeof profilesLastFocused.focus === 'function') profilesLastFocused.focus();
+}
+sneakerBtn.addEventListener('click', openProfilesModal);
+profilesCloseBtn.addEventListener('click', closeProfilesModal);
+profilesOverlay.addEventListener('click', (e)=>{ if(e.target === profilesOverlay) closeProfilesModal(); });
+document.addEventListener('keydown', (e)=>{
+  if(profilesOverlay.hidden) return;
+  if(e.key === 'Escape'){ closeProfilesModal(); return; }
+  if(e.key === 'Tab'){
+    const focusable = [...profilesOverlay.querySelectorAll('button, a[href], input, select')].filter(el => !el.hidden && el.offsetParent !== null && !el.disabled);
+    if(!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if(e.shiftKey && document.activeElement === first){
+      e.preventDefault(); last.focus();
+    } else if(!e.shiftKey && document.activeElement === last){
+      e.preventDefault(); first.focus();
+    }
+  }
+});
+
 /* ================= RENDER: TRACK CARDS ================= */
 const trackGrid = document.getElementById('trackGrid');
 const tracksHeading = document.getElementById('tracksHeading');
@@ -2490,7 +2947,7 @@ function renderTracks(){
   }
 
   trackGrid.innerHTML = '';
-  list.forEach(({t: trk, boroughId, distanceMi})=>{
+  list.forEach(({t: trk, boroughId, distanceMi}, idx)=>{
     const meta = surfaceMeta(trk.surface);
     const lap = lapBreakdown(trk);
     const wxKey = favKey(boroughId, trk.name);
@@ -2502,10 +2959,11 @@ function renderTracks(){
     const condBadgeLabel = cond.level==='good' ? t('condGood') : cond.level==='fair' ? t('condFair') : t('condCaution');
 
     const card = document.createElement('article');
-    card.className = 'track-card';
+    card.className = 'track-card b-' + boroughId;
+    card.style.setProperty('--i', Math.min(idx, 10));
     card.innerHTML = `
       <div class="track-top">
-        <h3>${trk.name}</h3>
+        <h3><button type="button" class="track-title-btn" aria-label="${t('viewTrackDetailAria', {name: escapeHtml(trk.name)})}">${trk.name}</button></h3>
         <div class="top-chips">
           <button class="fav-star ${isFav?'active':''}" aria-label="${t('favAria')}" data-key="${favKey(boroughId,trk.name)}">${isFav?'★':'☆'}</button>
           <span class="distance-chip">${trk.distance}</span>
@@ -2526,14 +2984,7 @@ function renderTracks(){
       <div class="track-meta">
         <div><span class="k">${t('hoursLabel')}</span><span class="v">${trField(trk,'hours')}</span></div>
         <div><span class="k">${t('whereLabel')}</span><span class="v">${trk.address}</span></div>
-        <div class="loc-icon-row">
-          <button type="button" class="loc-btn" data-loc="parking" aria-label="${t('parkingLabel')}"><span class="loc-emoji" aria-hidden="true">🅿️</span><span>${t('parkingLabel')}</span></button>
-          <button type="button" class="loc-btn" data-loc="restrooms" aria-label="${t('restroomsLabel')}"><span class="loc-emoji" aria-hidden="true">🚻</span><span>${t('restroomsLabel')}</span></button>
-          <button type="button" class="loc-btn" data-loc="fountains" aria-label="${t('fountainsLabel')}"><span class="loc-emoji" aria-hidden="true">🚰</span><span>${t('fountainsLabel')}</span></button>
-          <button type="button" class="loc-btn safety" data-loc="hospital" aria-label="${t('hospitalLabel')}"><span class="loc-emoji" aria-hidden="true">🏥</span><span>${t('hospitalLabel')}</span></button>
-          <button type="button" class="loc-btn safety" data-loc="police" aria-label="${t('policeLabel')}"><span class="loc-emoji" aria-hidden="true">🚓</span><span>${t('policeLabel')}</span></button>
-          <button type="button" class="loc-btn" data-loc="transit" aria-label="${t('transitLabel')}"><span class="loc-emoji" aria-hidden="true">🚇</span><span>${t('transitLabel')}</span></button>
-        </div>
+        <div class="loc-icon-row">${locIconRowHtml()}</div>
         <div class="pet-row"><span class="k">${t('petHoursLabel')}</span><span class="v">${trField(trk,'petHours')}</span></div>
         <div class="pet-row"><span class="k">${t('dogParksLabel')}</span><span class="v">${trField(trk,'dogParks')}</span></div>
       </div>
@@ -2548,51 +2999,8 @@ function renderTracks(){
       saveFavs(favorites);
       renderTracks();
     });
-    card.querySelectorAll('.loc-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const kind = btn.dataset.loc;
-        if(kind === 'parking'){
-          openLocInfo({
-            emoji:'🅿️', title:t('parkingLabel'), trackName: trk.name,
-            rows:[
-              {label:t('parkingLabel'), value: trField(trk,'parking')},
-              {label:t('adaParkingLabel'), value: trField(trk,'accessibleParking')}
-            ],
-            directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
-          });
-        } else if(kind === 'restrooms'){
-          openLocInfo({
-            emoji:'🚻', title:t('restroomsLabel'), trackName: trk.name,
-            rows:[{label:t('restroomsLabel'), value: trField(trk,'restrooms')}],
-            directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
-          });
-        } else if(kind === 'fountains'){
-          openLocInfo({
-            emoji:'🚰', title:t('fountainsLabel'), trackName: trk.name,
-            rows:[{label:t('fountainsLabel'), value: trField(trk,'fountains')}],
-            directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
-          });
-        } else if(kind === 'hospital'){
-          openLocInfo({
-            emoji:'🏥', title:t('hospitalLabel'), trackName: trk.name,
-            rows:[{label:t('hospitalLabel'), value: trk.hospital}],
-            directionsUrl: placeMapsUrl(trk.hospital), directionsLabel: t('directionsBtn')
-          });
-        } else if(kind === 'police'){
-          openLocInfo({
-            emoji:'🚓', title:t('policeLabel'), trackName: trk.name,
-            rows:[{label:t('policeLabel'), value: trk.police}],
-            directionsUrl: placeMapsUrl(trk.police), directionsLabel: t('directionsBtn')
-          });
-        } else if(kind === 'transit'){
-          openLocInfo({
-            emoji:'🚇', title:t('transitLabel'), trackName: trk.name,
-            rows:[{label:t('transitLabel'), value: trk.transit}],
-            directionsUrl: mapsUrl, directionsLabel: t('directionsBtn')
-          });
-        }
-      });
-    });
+    bindLocButtons(card.querySelector('.loc-icon-row'), trk, mapsUrl);
+    card.querySelector('.track-title-btn').addEventListener('click', ()=> openTrackDetail(trk));
     trackGrid.appendChild(card);
   });
   applyShoeRecs();
@@ -2623,7 +3031,16 @@ function buildShoeText(surface, note, wx){
       extras.push(t('shoeExtraWindy'));
     }
   }
-  return { shoe: base.shoe, text: [text, ...extras, note].join(' ') };
+  const profile = getActiveProfile();
+  const matches = matchingSneakers(profile, surface);
+  if(profile && matches.length){
+    const names = matches.map(s=>escapeHtml(s.name)).join(', ');
+    return { shoe: '👟 ' + t('yourPickLabel') + ': ' + names, text: [...extras, note].filter(Boolean).join(' ') };
+  }
+  if(profile && profile.sneakers.length && !matches.length){
+    return { shoe: base.shoe, text: [text, ...extras, note].filter(Boolean).join(' '), noMatchNote: t('noMatchNote', {name: escapeHtml(profile.name)}) };
+  }
+  return { shoe: base.shoe, text: [text, ...extras, note].filter(Boolean).join(' ') };
 }
 function applyShoeRecs(){
   document.querySelectorAll('.shoe-rec').forEach(el=>{
@@ -2631,7 +3048,7 @@ function applyShoeRecs(){
     const note = el.dataset.note;
     const wx = trackWeatherMap[el.dataset.wxkey] || null;
     const rec = buildShoeText(surface, note, wx);
-    el.innerHTML = `<b>${rec.shoe}</b>${rec.text}`;
+    el.innerHTML = `<b>${rec.shoe}</b>${rec.text}` + (rec.noMatchNote ? `<div class="shoe-rec-note">${rec.noMatchNote}</div>` : '');
   });
 }
 
@@ -2751,6 +3168,12 @@ function updateGearStrip(){
 function renderWeatherDisplay(){
   if(!currentWeather) return;
   const c = currentWeather;
+  const dialEl = document.querySelector('.dial');
+  if(dialEl){
+    dialEl.classList.remove('wx-updated');
+    void dialEl.offsetWidth; // restart animation
+    dialEl.classList.add('wx-updated');
+  }
   document.getElementById('wxTemp').innerHTML = dispTemp(c.temp).replace('°F','<sup>°F</sup>').replace('°C','<sup>°C</sup>');
   document.getElementById('wxCond').textContent = weatherLabel(c.code, c.precip);
   document.getElementById('wxFeels').textContent = t('feelsLike', {t: dispTemp(c.feels)});
@@ -2964,6 +3387,7 @@ function setLanguage(lang){
   saveLang(lang);
   document.getElementById('langSelect').value = lang;
   applyStaticLabels();
+  sneakerBtn.setAttribute('aria-label', t('sneakerIconAria'));
   renderWeatherDisplay();
   updateGearStrip();
   renderTracks();
