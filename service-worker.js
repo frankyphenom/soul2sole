@@ -46,8 +46,13 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(req)
       .then((networkResponse) => {
-        const copy = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        // Only cache a genuinely good response — caching a transient 404/500
+        // would mean that error page keeps getting served once offline, even
+        // after the site recovers.
+        if (networkResponse && networkResponse.ok) {
+          const copy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
         return networkResponse;
       })
       .catch(() => caches.match(req).then((cached) => cached || caches.match(SHELL_URL)))

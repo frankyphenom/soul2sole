@@ -2887,7 +2887,7 @@ function lapGoalHtml(trk){
         </div>
       </div>
       <div class="lap-goal-input-row">
-        <input type="number" class="lap-goal-input" min="0" step="0.1" inputmode="decimal" placeholder="${units==='metric'?'km':'mi'}">
+        <input type="number" class="lap-goal-input" min="0" step="0.01" inputmode="decimal" placeholder="${units==='metric'?'km':'mi'}">
         <span class="lap-goal-result mono" aria-live="polite"></span>
       </div>
     </div>`;
@@ -3044,6 +3044,16 @@ function setUnits(u){
   units = u;
   document.getElementById('unitImperial').classList.toggle('active', u==='imperial');
   document.getElementById('unitMetric').classList.toggle('active', u==='metric');
+  // Any distance already typed into a "hit a distance" calculator or the run
+  // log's distance field was entered in the OLD unit — leaving those digits in
+  // place under the new unit's label would silently reinterpret e.g. "3.11"
+  // as 3.11 km instead of 3.11 mi. Clear them rather than risk a wrong number;
+  // renderTracks()'s own snapshot/restore (for unrelated re-renders, like the
+  // initial per-track weather fetch completing) only restores non-empty
+  // values, so clearing first here means nothing stale gets carried across.
+  document.querySelectorAll('.lap-goal-input').forEach(el=>{ el.value = ''; });
+  document.querySelectorAll('.sneaker-log-input').forEach(el=>{ el.value = ''; });
+  if(runDistanceInput) runDistanceInput.value = '';
   if(currentWeather) renderWeatherDisplay();
   renderTracks();
   // If the profiles modal is open, its shoe-mileage figures (and the "edit
@@ -3456,7 +3466,47 @@ function renderProfileCard(p){
   `;
 }
 
+// Every mutating action in the profiles modal (delete, add, log miles, etc.)
+// re-renders ALL profile cards, not just the one acted on — which would
+// otherwise silently discard an unsaved "add sneaker" draft (name + checked
+// surfaces) or a typed-but-not-yet-submitted "+ mi/km" value sitting in a
+// DIFFERENT card. Snapshot that draft state before rebuilding and restore it
+// after, keyed by profile/sneaker id so it survives an unrelated action
+// elsewhere in the list.
+function snapshotProfileDrafts(){
+  const drafts = {};
+  document.querySelectorAll('.profile-card').forEach(card=>{
+    const pid = card.dataset.profileId;
+    const nameInput = card.querySelector('.sneaker-name-input');
+    const checked = [...card.querySelectorAll('.surface-check-row input:checked')].map(cb=>cb.value);
+    const logDrafts = {};
+    card.querySelectorAll('.sneaker-log-input').forEach(input=>{
+      if(input.value) logDrafts[input.dataset.sneakerId] = input.value;
+    });
+    if((nameInput && nameInput.value) || checked.length || Object.keys(logDrafts).length){
+      drafts[pid] = { name: nameInput ? nameInput.value : '', checked, logDrafts };
+    }
+  });
+  return drafts;
+}
+function restoreProfileDrafts(drafts){
+  document.querySelectorAll('.profile-card').forEach(card=>{
+    const draft = drafts[card.dataset.profileId];
+    if(!draft) return;
+    const nameInput = card.querySelector('.sneaker-name-input');
+    if(nameInput && draft.name) nameInput.value = draft.name;
+    draft.checked.forEach(val=>{
+      const cb = card.querySelector(`.surface-check-row input[value="${val}"]`);
+      if(cb) cb.checked = true;
+    });
+    Object.entries(draft.logDrafts).forEach(([sid, val])=>{
+      const input = card.querySelector(`.sneaker-log-input[data-sneaker-id="${sid}"]`);
+      if(input) input.value = val;
+    });
+  });
+}
 function renderProfilesModal(){
+  const profileDrafts = snapshotProfileDrafts();
   document.getElementById('profilesTitleText').textContent = t('profilesTitle');
   document.getElementById('profilesIntroText').textContent = t('profilesIntro');
   document.getElementById('txtActiveProfileLabel').textContent = t('activeProfileLabel');
@@ -3480,6 +3530,7 @@ function renderProfilesModal(){
   profileListEl.innerHTML = profiles.length
     ? profiles.map(renderProfileCard).join('')
     : `<p class="empty-note small">${t('emptyProfilesNote')}</p>`;
+  restoreProfileDrafts(profileDrafts);
 }
 
 activeProfileSelect.addEventListener('change', ()=>{
@@ -3518,7 +3569,13 @@ profileListEl.addEventListener('click', (e)=>{
   if(delSneakerBtn){
     const pid = delSneakerBtn.dataset.profileId, sid = delSneakerBtn.dataset.sneakerId;
     const profile = profiles.find(p=>p.id===pid);
-    if(profile) profile.sneakers = profile.sneakers.filter(s=>s.id!==sid);
+    if(profile){
+      profile.sneakers = profile.sneakers.filter(s=>s.id!==sid);
+      // Any run log entries logged against this shoe would otherwise point at
+      // an id that no longer exists — unlink them rather than leave a dangling
+      // reference (the run itself, its distance, and its date all stay intact).
+      profile.runs.forEach(r=>{ if(r.sneakerId === sid) r.sneakerId = ''; });
+    }
     saveProfiles();
     renderProfilesModal();
     applyShoeRecs();
@@ -3703,6 +3760,7 @@ function renderRunLogModal(){
 
   if(!runDateInput.value) runDateInput.value = todayISODate();
 
+  const prevSneakerSelection = runSneakerSelect.value;
   runSneakerSelect.innerHTML = '';
   const noneOpt = document.createElement('option');
   noneOpt.value = '';
@@ -3714,6 +3772,10 @@ function renderRunLogModal(){
     opt.textContent = s.name;
     runSneakerSelect.appendChild(opt);
   });
+  // Rebuilding the <select> resets its selection — restore whatever the user
+  // had picked (e.g. across a language or unit switch while mid-form) as long
+  // as that sneaker still exists.
+  if(profile.sneakers.some(s=>s.id===prevSneakerSelection)) runSneakerSelect.value = prevSneakerSelection;
 
   const stats = computeRunStats(profile);
   runStatsRow.innerHTML = [
@@ -3834,6 +3896,18 @@ const tracksHeading = document.getElementById('tracksHeading');
 const tracksCount = document.getElementById('tracksCount');
 
 function renderTracks(){
+  // renderTracks() rebuilds every card from scratch (e.g. when live per-track
+  // weather finishes loading shortly after page load), which would otherwise
+  // wipe out anything a user had already typed into a track's "hit a distance"
+  // calculator. Snapshot in-progress values by track name and restore them below.
+  const lapGoalSnapshot = {};
+  document.querySelectorAll('.lap-goal-input').forEach(input=>{
+    if(!input.value) return;
+    const card = input.closest('.track-card');
+    const name = card && card.querySelector('.track-title-btn');
+    if(name) lapGoalSnapshot[name.textContent.trim()] = input.value;
+  });
+
   const list = buildList();
   tracksHeading.textContent = nearMeActive ? t('sectionNearby') : t('sectionBorough', {b: boroughName(currentBorough.id)});
   tracksCount.textContent = t('resultsCount', {n: list.length});
@@ -3904,6 +3978,13 @@ function renderTracks(){
     bindLocButtons(card.querySelector('.loc-icon-row'), trk, mapsUrl);
     card.querySelector('.track-title-btn').addEventListener('click', ()=> openTrackDetail(trk));
     bindLapGoal(card, trk);
+    if(lapGoalSnapshot[trk.name] !== undefined){
+      const goalEl = card.querySelector('.lap-goal');
+      if(goalEl){
+        goalEl.querySelector('.lap-goal-input').value = lapGoalSnapshot[trk.name];
+        updateLapGoalResult(goalEl, trk.lapMiles);
+      }
+    }
     trackGrid.appendChild(card);
   });
   applyShoeRecs();
@@ -4072,9 +4153,26 @@ function updateGearStrip(){
    useful for runners deciding whether to bring a headlamp or reflective
    gear. Falls back gracefully (returns null) if the weather fetch hasn't
    populated sunrise/sunset yet. */
+// Open-Meteo's sunrise/sunset strings are timezone-offset-less NY-local wall-clock
+// times (requested with timezone=America/New_York), so `new Date(c.sunrise)` gets
+// parsed as if it were in the BROWSER's own local timezone, not NY's. That still
+// round-trips correctly for *display* (parse and re-format both use the same
+// offset, so the shown clock time is unaffected) — but comparing that against a
+// real `new Date()` "now" is wrong for any viewer not on America/New_York. Fix:
+// represent "now" the same "naive" way (NY wall-clock time, parsed as if local)
+// so the before/after comparison is apples-to-apples regardless of the
+// viewer's own device timezone.
+function nowAsNYNaiveDate(){
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York', year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false,
+  }).formatToParts(new Date());
+  const get = type => parts.find(p=>p.type===type).value;
+  return new Date(`${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}`);
+}
 function daylightStatusText(c){
   if(!c || !c.sunrise || !c.sunset) return null;
-  const now = new Date();
+  const now = nowAsNYNaiveDate();
   const sunrise = new Date(c.sunrise);
   const sunset = new Date(c.sunset);
   const fmtTime = d => d.toLocaleTimeString(localeTag(), {hour:'numeric', minute:'2-digit'});
