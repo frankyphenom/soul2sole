@@ -531,13 +531,13 @@
   <div class="loc-sheet track-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="trackDetailTitleText">
     <div class="loc-head">
       <div class="loc-head-left">
-        <span class="loc-icon" aria-hidden="true">🛰️</span>
+        <span class="loc-icon" aria-hidden="true">🗺️</span>
         <h2 id="trackDetailTitleText"></h2>
       </div>
       <button class="loc-close" id="trackDetailCloseBtn" aria-label="Close">✕</button>
     </div>
     <div class="track-detail-map-wrap">
-      <iframe id="trackDetailMapFrame" class="track-detail-map" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Overhead aerial view of the track"></iframe>
+      <iframe id="trackDetailMapFrame" class="track-detail-map" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Street map of the track location"></iframe>
     </div>
   </div>
 </div>
@@ -2743,10 +2743,13 @@ let trackDetailLastFocused = null;
 function openTrackDetail(trk){
   trackDetailLastFocused = document.activeElement;
   trackDetailTitleText.textContent = trk.name;
-  // t=k = pure satellite imagery (no roads/labels overlay) for a clean overhead
-  // aerial look at the track's real location.
+  // ll= (not q=) centers the map on the coordinates WITHOUT dropping a search
+  // pin — Google's free embed can't load the place-info card for that pin
+  // (needs a paid API key), so removing the pin removes the broken tap
+  // target entirely. Default map type (no t= param) = street/road map, not
+  // satellite.
   trackDetailMapFrame.src = trk.lat != null && trk.lon != null
-    ? `https://www.google.com/maps?q=${trk.lat},${trk.lon}&z=${mapZoomFor(trk)}&t=k&output=embed`
+    ? `https://www.google.com/maps?ll=${trk.lat},${trk.lon}&z=${mapZoomFor(trk)}&output=embed`
     : '';
   trackDetailOverlay.hidden = false;
   trackDetailCloseBtn.focus();
