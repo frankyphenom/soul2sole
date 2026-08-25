@@ -195,12 +195,18 @@
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .track-card:hover{transform:translateY(-3px); box-shadow:0 12px 24px rgba(28,29,31,0.1);}
-  .track-top{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .track-top{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px; padding-right:34px;}
   .track-top h3{font-size:23px; line-height:1.05; flex:1 1 190px; min-width:0;}
   .top-chips{display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex:0 1 auto; max-width:100%;}
   .distance-chip{font-family:'SF Mono',Menlo,Consolas,'Courier New',monospace; font-size:12px; font-weight:700; color:#fff; background:var(--asphalt); padding:4px 9px; border-radius:7px; white-space:normal; text-align:right; max-width:200px;}
   .away-chip{font-family:'SF Mono',Menlo,Consolas,'Courier New',monospace; font-size:11px; font-weight:700; color:var(--asphalt); background:var(--concrete); padding:3px 8px; border-radius:7px; white-space:nowrap;}
-  .fav-star{background:none; border:none; cursor:pointer; font-size:18px; line-height:1; padding:2px; color:var(--ink-soft);}
+  /* Pinned to the same top-right spot on every card, independent of how the
+     track name wraps — position:absolute against .track-card's own
+     position:relative, so it never shifts around like it used to. */
+  .fav-star{
+    position:absolute; top:20px; right:20px;
+    background:none; border:none; cursor:pointer; font-size:18px; line-height:1; padding:2px; color:var(--ink-soft);
+  }
   .fav-star.active{color:var(--signal);}
 
   .badge-row{display:flex; gap:6px; flex-wrap:wrap;}
@@ -2962,10 +2968,10 @@ function renderTracks(){
     card.className = 'track-card b-' + boroughId;
     card.style.setProperty('--i', Math.min(idx, 10));
     card.innerHTML = `
+      <button class="fav-star ${isFav?'active':''}" aria-label="${t('favAria')}" data-key="${favKey(boroughId,trk.name)}">${isFav?'★':'☆'}</button>
       <div class="track-top">
         <h3><button type="button" class="track-title-btn" aria-label="${t('viewTrackDetailAria', {name: escapeHtml(trk.name)})}">${trk.name}</button></h3>
         <div class="top-chips">
-          <button class="fav-star ${isFav?'active':''}" aria-label="${t('favAria')}" data-key="${favKey(boroughId,trk.name)}">${isFav?'★':'☆'}</button>
           <span class="distance-chip">${trk.distance}</span>
           ${awayText ? `<span class="away-chip">${awayText}</span>` : ''}
         </div>
